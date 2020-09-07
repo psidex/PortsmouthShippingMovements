@@ -8,6 +8,10 @@ import (
 	"time"
 )
 
+// UAString is the custom User Agent string for web requests made by this program.
+// TODO: Currently hardcoded to my email address, probably change this to read from a config file in the future?
+const UAString = "PortsmouthShippingMovements/0.1 (simjenner3@gmail.com)"
+
 // dailyMovementUrl is the base URL for daily movements.
 const dailyMovementUrl = "https://www.royalnavy.mod.uk/qhm/portsmouth/shipping-movements/daily-movements?date="
 
@@ -66,7 +70,16 @@ func dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, error) {
 func getMovements(dt time.Time) ([]Movement, error) {
 	query := dailyMovementUrl + dt.Format("02/01/2006") // dd/mm/yyyy
 
-	resp, err := http.Get(query)
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", query, nil)
+	if err != nil {
+		return []Movement{}, err
+	}
+
+	req.Header.Set("User-Agent", UAString)
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return []Movement{}, err
 	}

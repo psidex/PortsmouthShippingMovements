@@ -2,11 +2,18 @@ package movements
 
 import "sync"
 
-// MovementHandler controls storing movement lists for today and tomorrow.
+// MovementHandler is a goroutine-safe controller for storing movement lists for today and tomorrow.
 type MovementHandler struct {
-	mu                *sync.Mutex
-	todayMovements    []Movement
-	tomorrowMovements []Movement
+	mu                *sync.Mutex // The mutex for this handler. It being a pointer ensures that it's never copied.
+	todayMovements    []Movement  // A slice containing Movement structs for today.
+	tomorrowMovements []Movement  // A slice containing Movement structs for tomorrow.
+}
+
+// NewMovementHandler creates a new MovementHandler.
+func NewMovementHandler() MovementHandler {
+	return MovementHandler{
+		mu: &sync.Mutex{},
+	}
 }
 
 // TodayMovements returns the stored list of movements for today.
