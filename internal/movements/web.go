@@ -2,18 +2,22 @@ package movements
 
 import (
 	"github.com/PuerkitoBio/goquery"
+	"github.com/psidex/PortsmouthShippingMovements/internal/images"
 	"io"
 	"net/http"
 	"strings"
 	"time"
 )
 
+// This file has a couple of "FIXME" comments that are to do with debugging, to be fixed later.
+
 // UAString is the custom User Agent string for web requests made by this program.
 // TODO: Currently hardcoded to my email address, probably change this to read from a config file in the future?
 const UAString = "PortsmouthShippingMovements/0.1 (simjenner3@gmail.com)"
 
 // dailyMovementUrl is the base URL for daily movements.
-const dailyMovementUrl = "https://www.royalnavy.mod.uk/qhm/portsmouth/shipping-movements/daily-movements?date="
+//FIXME: const dailyMovementUrl = "https://www.royalnavy.mod.uk/qhm/portsmouth/shipping-movements/daily-movements?date="
+const dailyMovementUrl = "http://127.0.0.1:8000/qhm.html"
 
 // dailyMovementHtmlToStruct takes the body from a request to dailyMovementUrl and extracts the movements.
 func dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, error) {
@@ -58,6 +62,9 @@ func dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, error) {
 
 		if thisMovement.From.Name == "" && thisMovement.To.Name == "" {
 			thisMovement.Type = Notice
+		} else {
+			// If it's not a notice it's a ship so we need an image.
+			thisMovement.ImageUrl = images.GetImageForShip(thisMovement.Name)
 		}
 
 		movements = append(movements, thisMovement)
@@ -68,7 +75,8 @@ func dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, error) {
 
 // getMovements returns a slice of Movement structs containing the data for the given date.
 func getMovements(dt time.Time) ([]Movement, error) {
-	query := dailyMovementUrl + dt.Format("02/01/2006") // dd/mm/yyyy
+	//FIXME: query := dailyMovementUrl + dt.Format("02/01/2006") // dd/mm/yyyy
+	query := dailyMovementUrl
 
 	client := &http.Client{}
 

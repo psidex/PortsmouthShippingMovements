@@ -10,8 +10,9 @@ type MovementHandler struct {
 }
 
 // NewMovementHandler creates a new MovementHandler.
-func NewMovementHandler() MovementHandler {
-	return MovementHandler{
+// Any MovementHandler should be passed as a pointer as the setters reassign the movement slice fields.
+func NewMovementHandler() *MovementHandler {
+	return &MovementHandler{
 		mu: &sync.Mutex{},
 	}
 }

@@ -25,4 +25,5 @@ type Movement struct {
 	To       Location     // Where the ship is moving to.
 	Method   string       // Any special movement methods (e.g. TA for Tug Assisted)
 	Remarks  string       // Remarks.
+	ImageUrl string       // A URL to an image of the ship (if the Movement is of type Move).
 }

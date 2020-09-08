@@ -1,20 +1,23 @@
 package main
 
 import (
+	"github.com/gorilla/mux"
+	"github.com/psidex/PortsmouthShippingMovements/internal/api"
 	"github.com/psidex/PortsmouthShippingMovements/internal/movements"
 	"log"
+	"net/http"
+	"time"
 )
 
 func main() {
-	shipMovements, err := movements.GetTomorrowMovements()
-	if err != nil {
-		log.Fatalf("Fatal error getting movements: %v", err)
-	}
-	for _, m := range shipMovements {
-		if m.Type == movements.Notice {
-			log.Printf("Notice: %s at %s", m.Name, m.Time)
-		} else {
-			log.Printf("%s is moving from %s to %s at %s\n", m.Name, m.From.Name, m.To.Name, m.Time)
-		}
-	}
+	movementHandler := movements.NewMovementHandler()
+	go movements.UpdateMovementsPeriodically(movementHandler, time.Hour*12)
+	apiRoute := api.MovementApi{MovementHandler: movementHandler}
+
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/api/movements", apiRoute.GetShippingMovements)
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
+
+	// TODO: is log.Fatal like this a bad idea?
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
