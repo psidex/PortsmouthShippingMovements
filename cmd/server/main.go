@@ -1,23 +1,41 @@
 package main
 
 import (
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/psidex/PortsmouthShippingMovements/internal/api"
+	"github.com/psidex/PortsmouthShippingMovements/internal/images"
 	"github.com/psidex/PortsmouthShippingMovements/internal/movements"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
 func main() {
-	movementHandler := movements.NewMovementHandler()
-	go movements.UpdateMovementsPeriodically(movementHandler, time.Hour*12)
-	apiRoute := api.MovementApi{MovementHandler: movementHandler}
+	accessLogFile, err := os.OpenFile("./access.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer accessLogFile.Close()
+
+	imageStore, err := images.NewShipImageUrlStorage("./imagestorage")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	movementStore := movements.NewMovementStorage(imageStore)
+	go movements.UpdateMovementsPeriodically(movementStore, time.Hour*8)
+
+	apiRoute := api.MovementApi{MovementStore: movementStore}
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/api/movements", apiRoute.GetShippingMovements)
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 
-	// TODO: is log.Fatal like this a bad idea?
-	log.Fatal(http.ListenAndServe(":8080", router))
+	loggedRouter := handlers.LoggingHandler(accessLogFile, router)
+	err = http.ListenAndServe(":8080", loggedRouter)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

@@ -1,17 +1,28 @@
 package movements
 
 import (
+	"log"
 	"time"
 )
 
-// UpdateMovementsPeriodically takes a MovementHandler and updates the 2 movement lists every sleepDuration.
-func UpdateMovementsPeriodically(handler *MovementHandler, sleepDuration time.Duration) {
-	// TODO: Error handling.
-	todayMovements, _ := GetTodayMovements()
-	handler.SetTodayMovements(todayMovements)
+// UpdateMovementsPeriodically takes a MovementStorage and an images.ShipImageUrlStorage and updates the 2 movement lists
+// in the MovementStorage every sleepDuration.
+func UpdateMovementsPeriodically(movementStore *MovementStorage, sleepDuration time.Duration) {
+	log.Println("Updating movementStore movements")
 
-	tomorrowMovements, _ := GetTomorrowMovements()
-	handler.SetTomorrowMovements(tomorrowMovements)
+	todayMovements, err := GetTodayMovements()
+	if err != nil {
+		log.Printf("Error when calling GetTodayMovements: %v", err)
+	} else {
+		movementStore.SetTodayMovements(todayMovements)
+	}
+
+	tomorrowMovements, err := GetTomorrowMovements()
+	if err != nil {
+		log.Printf("Error when calling GetTomorrowMovements: %v", err)
+	} else {
+		movementStore.SetTomorrowMovements(tomorrowMovements)
+	}
 
 	time.Sleep(sleepDuration)
 }

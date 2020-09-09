@@ -2,7 +2,6 @@ package movements
 
 import (
 	"github.com/PuerkitoBio/goquery"
-	"github.com/psidex/PortsmouthShippingMovements/internal/images"
 	"io"
 	"net/http"
 	"strings"
@@ -62,11 +61,9 @@ func dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, error) {
 
 		if thisMovement.From.Name == "" && thisMovement.To.Name == "" {
 			thisMovement.Type = Notice
-		} else {
-			// If it's not a notice it's a ship so we need an image.
-			thisMovement.ImageUrl = images.GetImageForShip(thisMovement.Name)
 		}
 
+		// Movement images will be set
 		movements = append(movements, thisMovement)
 	})
 

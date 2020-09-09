@@ -27,3 +27,5 @@
 .idea
 *.syso
 *.zip
+*.log
+/imagestorage/
