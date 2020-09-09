@@ -10,12 +10,13 @@ import (
 // ShipImageUrlStorage manages the storage and caching of ship image urls.
 // Urls are stored in memory and on disk as files, this ensures speed and persistence.
 type ShipImageUrlStorage struct {
-	path   string            // Where the images URLs are to be stored (as files).
-	memory map[string]string // An in-memory map of known ship image URLs.
+	bingApiKey string            // The Bing API key for searching for images.
+	path       string            // Where the images URLs are to be stored (as files).
+	memory     map[string]string // An in-memory map of known ship image URLs.
 }
 
 // NewShipImageUrlStorage creates a new ShipImageUrlStorage, can return an error if there is a problem with imageDirectoryPath.
-func NewShipImageUrlStorage(imageUrlDirectoryPath string) (ShipImageUrlStorage, error) {
+func NewShipImageUrlStorage(bingApiKey, imageUrlDirectoryPath string) (ShipImageUrlStorage, error) {
 	_, err := os.Stat(imageUrlDirectoryPath)
 	if os.IsNotExist(err) {
 		if err = os.Mkdir(imageUrlDirectoryPath, 0644); err != nil {
@@ -27,8 +28,9 @@ func NewShipImageUrlStorage(imageUrlDirectoryPath string) (ShipImageUrlStorage, 
 	}
 
 	return ShipImageUrlStorage{
-		path:   imageUrlDirectoryPath,
-		memory: make(map[string]string),
+		bingApiKey: bingApiKey,
+		path:       imageUrlDirectoryPath,
+		memory:     make(map[string]string),
 	}, nil
 }
 
@@ -54,19 +56,17 @@ func (i ShipImageUrlStorage) saveUrlToFile(shipName, imageUrl string) error {
 // GetUrlForShip takes a ship name and returns a string containing the URL to an image of that ship.
 func (i ShipImageUrlStorage) GetUrlForShip(shipName string) string {
 	if url, ok := i.memory[shipName]; ok {
-		log.Printf("Found image url in memory: %s", shipName)
 		return url
 	}
 
 	// If the file doesn't exist or there is a problem, move on from this block.
 	if url, err := i.readUrlFromFile(shipName); url != "" && err == nil {
-		log.Printf("Found image url in file: %s", shipName)
 		i.memory[shipName] = url
 		return url
 	}
 
 	log.Printf("Searching Bing API for images of ship: %s", shipName)
-	url := searchForShipImage(shipName)
+	url := searchForShipImage(i.bingApiKey, shipName)
 	if url != "" {
 		// We will have to return an empty string is it is one, but only save if it's not one.
 		err := i.saveUrlToFile(shipName, url)

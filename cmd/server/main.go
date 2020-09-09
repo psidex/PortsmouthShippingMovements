@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/psidex/PortsmouthShippingMovements/internal/api"
+	"github.com/psidex/PortsmouthShippingMovements/internal/config"
 	"github.com/psidex/PortsmouthShippingMovements/internal/images"
 	"github.com/psidex/PortsmouthShippingMovements/internal/movements"
 	"log"
@@ -13,13 +14,18 @@ import (
 )
 
 func main() {
-	accessLogFile, err := os.OpenFile("./access.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	c, err := config.LoadConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	accessLogFile, err := os.OpenFile(c.AccessLogPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer accessLogFile.Close()
 
-	imageStore, err := images.NewShipImageUrlStorage("./imagestorage")
+	imageStore, err := images.NewShipImageUrlStorage(c.BingImageSearchApiKey, c.ImageStoragePath)
 	if err != nil {
 		log.Fatal(err)
 	}

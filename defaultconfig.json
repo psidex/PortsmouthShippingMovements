@@ -1,0 +1,5 @@
+{
+  "image_storage_path": "./imagestorage",
+  "access_log_path": "./access.log",
+  "bing_image_search_api_key": "your_key"
+}

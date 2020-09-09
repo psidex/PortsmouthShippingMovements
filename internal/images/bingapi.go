@@ -5,15 +5,10 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"os"
 	"time"
 )
 
 const apiRoute = "https://api.cognitive.microsoft.com/bing/v7.0/images/search?q="
-
-var (
-	apiKey = os.Getenv("BING_IMAGE_API_KEY")
-)
 
 // imageSearch represents the API response from a Bing image search API request.
 // Thanks https://mholt.github.io/json-to-go/
@@ -76,7 +71,7 @@ type imageSearch struct {
 }
 
 // searchForShipImage attempts to find an image URL for the given ship name. Returns "" if none found or an error occurs.
-func searchForShipImage(shipName string) string {
+func searchForShipImage(apiKey, shipName string) string {
 	client := &http.Client{}
 	query := apiRoute + url.QueryEscape(shipName)
 
