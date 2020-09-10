@@ -45,7 +45,8 @@ func (m MovementStorage) TomorrowMovements() []Movement {
 
 // setMovementImages sets the images for all the given movements.
 func (m MovementStorage) setMovementImages(movementSlice []Movement) {
-	// We have to iterate this way as using range will make a copy of the slice.
+	// We have to iterate this way so we can change the values in the slice. Using range would make a copy of the
+	// elements which means we wouldn't be able to change the actual values inside the slice.
 	for i := 0; i < len(movementSlice); i++ {
 		if movementSlice[i].Type == Move {
 			url := m.imageUrlStore.GetUrlForShip(movementSlice[i].Name)

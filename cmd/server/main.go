@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/psidex/PortsmouthShippingMovements/internal/api"
+	"github.com/psidex/PortsmouthShippingMovements/internal/bing"
 	"github.com/psidex/PortsmouthShippingMovements/internal/config"
 	"github.com/psidex/PortsmouthShippingMovements/internal/images"
 	"github.com/psidex/PortsmouthShippingMovements/internal/movements"
@@ -25,7 +26,8 @@ func main() {
 	}
 	defer accessLogFile.Close()
 
-	imageStore, err := images.NewShipImageUrlStorage(c.BingImageSearchApiKey, c.ImageStoragePath)
+	imageSearchApi := bing.NewImageSearchApi(c.BingImageSearchApiKey)
+	imageStore, err := images.NewShipImageUrlStorage(imageSearchApi, c.ImageStoragePath)
 	if err != nil {
 		log.Fatal(err)
 	}

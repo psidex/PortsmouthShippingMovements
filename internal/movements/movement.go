@@ -15,7 +15,7 @@ type Location struct {
 }
 
 // Movement represents one row in the table of movements.
-// Although this is called Movement it can also hold data for a Move or a Notice.
+// Although this is called Movement it can hold data for a Move or a Notice.
 type Movement struct {
 	Type     MovementType // Move or Notice.
 	Position string       // The position in the table, starts at 1.

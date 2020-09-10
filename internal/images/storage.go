@@ -1,6 +1,7 @@
 package images
 
 import (
+	"github.com/psidex/PortsmouthShippingMovements/internal/bing"
 	"io/ioutil"
 	"log"
 	"os"
@@ -10,33 +11,33 @@ import (
 // ShipImageUrlStorage manages the storage and caching of ship image urls.
 // Urls are stored in memory and on disk as files, this ensures speed and persistence.
 type ShipImageUrlStorage struct {
-	bingApiKey string            // The Bing API key for searching for images.
-	path       string            // Where the images URLs are to be stored (as files).
-	memory     map[string]string // An in-memory map of known ship image URLs.
+	imageSearchApi bing.ImageSearchApi // The API for searching for images.
+	path           string              // Where the images URLs are to be stored (as files).
+	memory         map[string]string   // An in-memory map of known ship image URLs.
 }
 
 // NewShipImageUrlStorage creates a new ShipImageUrlStorage, can return an error if there is a problem with imageDirectoryPath.
-func NewShipImageUrlStorage(bingApiKey, imageUrlDirectoryPath string) (ShipImageUrlStorage, error) {
-	_, err := os.Stat(imageUrlDirectoryPath)
+func NewShipImageUrlStorage(imageSearchApi bing.ImageSearchApi, storagePath string) (ShipImageUrlStorage, error) {
+	_, err := os.Stat(storagePath)
 	if os.IsNotExist(err) {
-		if err = os.Mkdir(imageUrlDirectoryPath, 0644); err != nil {
+		if err = os.Mkdir(storagePath, 0644); err != nil {
 			return ShipImageUrlStorage{}, err
 		}
-		log.Printf("Created url storage directory: %s", imageUrlDirectoryPath)
+		log.Printf("Created url storage directory: %s", storagePath)
 	} else if err != nil {
 		return ShipImageUrlStorage{}, err
 	}
 
 	return ShipImageUrlStorage{
-		bingApiKey: bingApiKey,
-		path:       imageUrlDirectoryPath,
-		memory:     make(map[string]string),
+		imageSearchApi: imageSearchApi,
+		path:           storagePath,
+		memory:         make(map[string]string),
 	}, nil
 }
 
 // saveUrlToFile read a url from a file with the ship name as the file name.
-func (i ShipImageUrlStorage) readUrlFromFile(shipName string) (string, error) {
-	dat, err := ioutil.ReadFile(path.Join(i.path, shipName))
+func (s ShipImageUrlStorage) readUrlFromFile(shipName string) (string, error) {
+	dat, err := ioutil.ReadFile(path.Join(s.path, shipName))
 	if err != nil {
 		return "", err
 	}
@@ -44,9 +45,9 @@ func (i ShipImageUrlStorage) readUrlFromFile(shipName string) (string, error) {
 }
 
 // saveUrlToFile writes the given url to a file with the ship name as the file name.
-func (i ShipImageUrlStorage) saveUrlToFile(shipName, imageUrl string) error {
+func (s ShipImageUrlStorage) saveUrlToFile(shipName, imageUrl string) error {
 	data := []byte(imageUrl)
-	err := ioutil.WriteFile(path.Join(i.path, shipName), data, 0644)
+	err := ioutil.WriteFile(path.Join(s.path, shipName), data, 0644)
 	if err != nil {
 		return err
 	}
@@ -54,27 +55,34 @@ func (i ShipImageUrlStorage) saveUrlToFile(shipName, imageUrl string) error {
 }
 
 // GetUrlForShip takes a ship name and returns a string containing the URL to an image of that ship.
-func (i ShipImageUrlStorage) GetUrlForShip(shipName string) string {
-	if url, ok := i.memory[shipName]; ok {
+// If an error occurs or an image can't be found, an empty string ("") is returned.
+func (s ShipImageUrlStorage) GetUrlForShip(shipName string) string {
+	if url, ok := s.memory[shipName]; ok {
 		return url
 	}
 
-	// If the file doesn't exist or there is a problem, move on from this block.
-	if url, err := i.readUrlFromFile(shipName); url != "" && err == nil {
-		i.memory[shipName] = url
+	if url, err := s.readUrlFromFile(shipName); err == nil {
+		s.memory[shipName] = url
 		return url
 	}
 
-	log.Printf("Searching Bing API for images of ship: %s", shipName)
-	url := searchForShipImage(i.bingApiKey, shipName)
+	log.Printf("Searching BingApi API for images of ship: %s", shipName)
+
+	url, err := s.imageSearchApi.SearchForImage(shipName)
+	if err != nil {
+		log.Printf("Error searching for image: %v", err)
+		return ""
+	}
+
 	if url != "" {
-		// We will have to return an empty string is it is one, but only save if it's not one.
-		err := i.saveUrlToFile(shipName, url)
+		// Only save if we actually have a url.
+		err := s.saveUrlToFile(shipName, url)
 		if err == nil {
 			// If there was an error writing to the file, not saving the url in mem will trigger another write attempt
 			// next time.
-			i.memory[shipName] = url
+			s.memory[shipName] = url
 		}
 	}
+
 	return url
 }

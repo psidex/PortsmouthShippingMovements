@@ -1,16 +1,17 @@
-package images
+package bing
 
 import (
 	"encoding/json"
-	"log"
+	"errors"
 	"net/http"
 	"net/url"
 	"time"
 )
 
+// apiRoute is the base route for the image search API.
 const apiRoute = "https://api.cognitive.microsoft.com/bing/v7.0/images/search?q="
 
-// imageSearch represents the API response from a Bing image search API request.
+// imageSearch represents the API response from a BingApi image search API request.
 // Thanks https://mholt.github.io/json-to-go/
 type imageSearch struct {
 	Type            string `json:"_type"`
@@ -70,32 +71,41 @@ type imageSearch struct {
 	} `json:"relatedSearches"`
 }
 
-// searchForShipImage attempts to find an image URL for the given ship name. Returns "" if none found or an error occurs.
-func searchForShipImage(apiKey, shipName string) string {
-	client := &http.Client{}
-	query := apiRoute + url.QueryEscape(shipName)
+// ImageSearchApi contains methods for interacting with the Bing image search API.
+type ImageSearchApi struct {
+	client *http.Client // The http Client.
+	apiKey string       // The API key for the image search endpoint.
+}
 
-	req, err := http.NewRequest("GET", query, nil)
+// NewImageSearchApi creates a new ImageSearchApi.
+func NewImageSearchApi(apiKey string) ImageSearchApi {
+	return ImageSearchApi{client: &http.Client{Timeout: time.Second * 10}, apiKey: apiKey}
+}
+
+// SearchForImage attempts to find a thumbnail image URL for the given query.
+func (i ImageSearchApi) SearchForImage(query string) (string, error) {
+	queryUrl := apiRoute + url.QueryEscape(query)
+	req, err := http.NewRequest("GET", queryUrl, nil)
 	if err != nil {
-		log.Printf("Error creating search request: %v", err)
-		return ""
+		return "", err
 	}
 
-	req.Header.Set("Ocp-Apim-Subscription-Key", apiKey)
-	resp, err := client.Do(req)
+	req.Header.Set("Ocp-Apim-Subscription-Key", i.apiKey)
+	resp, err := i.client.Do(req)
 	if err != nil {
-		log.Printf("Error requesting search: %v", err)
-		return ""
+		return "", err
 	}
 	defer resp.Body.Close()
 
-	decoder := json.NewDecoder(resp.Body)
 	var data imageSearch
+	decoder := json.NewDecoder(resp.Body)
 	err = decoder.Decode(&data)
 	if err != nil {
-		log.Printf("Error decoding search response: %v", err)
-		return ""
+		return "", err
 	}
 
-	return data.Value[0].ThumbnailURL
+	if len(data.Value) <= 0 {
+		return "", errors.New("no images found")
+	}
+	return data.Value[0].ThumbnailURL, nil
 }
