@@ -3,6 +3,7 @@ package movements
 // MovementType represents the different types of data in the movement table rows.
 type MovementType int
 
+// Movement types.
 const (
 	Move   MovementType = iota // Move represents a ship movement.
 	Notice                     // Notice represents a notice from the Harbour Master.

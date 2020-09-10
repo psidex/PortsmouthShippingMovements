@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// Config contains the application configuration, to be unmarshalled into by Viper.
 type Config struct {
 	ContactEmail          string `mapstructure:"contact_email"`
 	ImageStoragePath      string `mapstructure:"image_storage_path"`
@@ -13,6 +14,7 @@ type Config struct {
 	BingImageSearchApiKey string `mapstructure:"bing_image_search_api_key"`
 }
 
+// LoadConfig looks for and read any config file found into the Config struct.
 func LoadConfig() (Config, error) {
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
