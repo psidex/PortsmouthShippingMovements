@@ -32,8 +32,9 @@ func main() {
 		log.Fatal(err)
 	}
 
+	scraper := movements.NewMovementScraper(c.ContactEmail)
 	movementStore := movements.NewMovementStorage(imageStore)
-	go movements.UpdateMovementsPeriodically(movementStore, time.Hour*8)
+	go movements.UpdateMovementsPeriodically(movementStore, scraper, time.Hour*8)
 
 	apiRoute := api.MovementApi{MovementStore: movementStore}
 

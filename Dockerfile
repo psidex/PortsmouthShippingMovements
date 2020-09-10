@@ -11,9 +11,7 @@ ENV INSIDE_DOCKER "True"
 EXPOSE 8080/tcp
 CMD ["./psmserver"]
 
-# e.g.
-# docker build -t latest .
 # docker run -d --name psmserver \
-#     -p 80:8080
-#     -v /home/user/psmdockervolume:/data
-#     latest
+#     --network proxynet \
+#     -v /home/user/psmdockervolume:/data \
+#     psidex/portsmouthshippingmovements

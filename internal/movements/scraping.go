@@ -8,18 +8,25 @@ import (
 	"time"
 )
 
-// This file has a couple of "FIXME" comments that are to do with debugging, to be fixed later.
-
-// UAString is the custom User Agent string for web requests made by this program.
-// TODO: Currently hardcoded to my email address, probably change this to read from a config file in the future?
-const UAString = "PortsmouthShippingMovements/0.1 (simjenner3@gmail.com)"
-
 // dailyMovementUrl is the base URL for daily movements.
-//FIXME: const dailyMovementUrl = "https://www.royalnavy.mod.uk/qhm/portsmouth/shipping-movements/daily-movements?date="
-const dailyMovementUrl = "http://127.0.0.1:8000/qhm.html"
+const dailyMovementUrl = "https://www.royalnavy.mod.uk/qhm/portsmouth/shipping-movements/daily-movements?date="
+
+// MovementScraper is for dealing with requesting and parsing movements from the QHM.
+type MovementScraper struct {
+	client   *http.Client // The http Client.
+	uaString string       // uaString is the custom User Agent string for web requests made by this program.
+}
+
+// NewMovementScraper creates a new MovementScraper.
+func NewMovementScraper(contactEmail string) MovementScraper {
+	return MovementScraper{
+		uaString: "PortsmouthShippingMovements/0.1 (" + contactEmail + ")",
+		client:   &http.Client{Timeout: time.Second * 10},
+	}
+}
 
 // dailyMovementHtmlToStruct takes the body from a request to dailyMovementUrl and extracts the movements.
-func dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, error) {
+func (m MovementScraper) dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, error) {
 	var movements []Movement
 
 	doc, err := goquery.NewDocumentFromReader(body)
@@ -71,26 +78,23 @@ func dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, error) {
 }
 
 // getMovements returns a slice of Movement structs containing the data for the given date.
-func getMovements(dt time.Time) ([]Movement, error) {
-	//FIXME: query := dailyMovementUrl + dt.Format("02/01/2006") // dd/mm/yyyy
-	query := dailyMovementUrl
-
-	client := &http.Client{}
+func (m MovementScraper) getMovements(dt time.Time) ([]Movement, error) {
+	query := dailyMovementUrl + dt.Format("02/01/2006") // dd/mm/yyyy
 
 	req, err := http.NewRequest("GET", query, nil)
 	if err != nil {
 		return []Movement{}, err
 	}
 
-	req.Header.Set("User-Agent", UAString)
+	req.Header.Set("User-Agent", m.uaString)
 
-	resp, err := client.Do(req)
+	resp, err := m.client.Do(req)
 	if err != nil {
 		return []Movement{}, err
 	}
 	defer resp.Body.Close()
 
-	movements, err := dailyMovementHtmlToStruct(resp.Body)
+	movements, err := m.dailyMovementHtmlToStruct(resp.Body)
 	if err != nil {
 		return []Movement{}, err
 	}
@@ -99,14 +103,14 @@ func getMovements(dt time.Time) ([]Movement, error) {
 }
 
 // GetTodayMovements returns a slice of Movement structs containing the data for today.
-func GetTodayMovements() ([]Movement, error) {
+func (m MovementScraper) GetTodayMovements() ([]Movement, error) {
 	dt := time.Now()
-	return getMovements(dt)
+	return m.getMovements(dt)
 }
 
 // GetTomorrowMovements returns a slice of Movement structs containing the data for tomorrow.
-func GetTomorrowMovements() ([]Movement, error) {
+func (m MovementScraper) GetTomorrowMovements() ([]Movement, error) {
 	dt := time.Now()
 	tomorrow := dt.AddDate(0, 0, 1)
-	return getMovements(tomorrow)
+	return m.getMovements(tomorrow)
 }

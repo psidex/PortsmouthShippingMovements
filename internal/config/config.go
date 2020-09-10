@@ -7,6 +7,7 @@ import (
 )
 
 type Config struct {
+	ContactEmail          string `mapstructure:"contact_email"`
 	ImageStoragePath      string `mapstructure:"image_storage_path"`
 	AccessLogPath         string `mapstructure:"access_log_path"`
 	BingImageSearchApiKey string `mapstructure:"bing_image_search_api_key"`
@@ -23,12 +24,10 @@ func LoadConfig() (Config, error) {
 		viper.AddConfigPath("/data")
 		viper.SetDefault("image_storage_path", "/data/imagestorage")
 		viper.SetDefault("access_log_path", "/data/access.log")
-		viper.SetDefault("bing_image_search_api_key", "")
 		log.Println("Running inside Docker")
 	} else {
 		viper.SetDefault("image_storage_path", "./imagestorage")
 		viper.SetDefault("access_log_path", "./access.log")
-		viper.SetDefault("bing_image_search_api_key", "")
 		log.Println("Not running inside Docker")
 	}
 
@@ -42,6 +41,11 @@ func LoadConfig() (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
+
+	log.Println("Configuration loaded")
+	log.Printf("contact_email: %s", config.ContactEmail)
+	log.Printf("image_storage_path: %s", config.ImageStoragePath)
+	log.Printf("access_log_path: %s", config.AccessLogPath)
 
 	return config, nil
 }

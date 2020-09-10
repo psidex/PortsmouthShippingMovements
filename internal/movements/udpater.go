@@ -5,11 +5,10 @@ import (
 	"time"
 )
 
-// UpdateMovementsPeriodically takes a MovementStorage and an images.ShipImageUrlStorage and updates the 2 movement lists
-// in the MovementStorage every sleepDuration.
-func UpdateMovementsPeriodically(movementStore *MovementStorage, sleepDuration time.Duration) {
+// UpdateMovementsPeriodically updates the 2 movement lists in the MovementStorage every sleepDuration.
+func UpdateMovementsPeriodically(movementStore *MovementStorage, scraper MovementScraper, sleepDuration time.Duration) {
 	log.Println("Updating movementStore todayMovements")
-	todayMovements, err := GetTodayMovements()
+	todayMovements, err := scraper.GetTodayMovements()
 	if err != nil {
 		log.Printf("Error when calling GetTodayMovements: %v", err)
 	} else {
@@ -17,7 +16,7 @@ func UpdateMovementsPeriodically(movementStore *MovementStorage, sleepDuration t
 	}
 
 	log.Println("Updating movementStore tomorrowMovements")
-	tomorrowMovements, err := GetTomorrowMovements()
+	tomorrowMovements, err := scraper.GetTomorrowMovements()
 	if err != nil {
 		log.Printf("Error when calling GetTomorrowMovements: %v", err)
 	} else {
