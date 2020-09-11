@@ -2,6 +2,7 @@ package movements
 
 import (
 	"github.com/PuerkitoBio/goquery"
+	"github.com/psidex/PortsmouthShippingMovements/internal/shipinfo"
 	"io"
 	"net/http"
 	"strings"
@@ -9,6 +10,7 @@ import (
 )
 
 // dailyMovementUrl is the base URL for daily movements.
+//const dailyMovementUrl = "http://127.0.0.1:8000/qhm.html?q="
 const dailyMovementUrl = "https://www.royalnavy.mod.uk/qhm/portsmouth/shipping-movements/daily-movements?date="
 
 // MovementScraper is for dealing with requesting and parsing movements from the QHM.
@@ -113,4 +115,17 @@ func (m MovementScraper) GetTomorrowMovements() ([]Movement, error) {
 	dt := time.Now()
 	tomorrow := dt.AddDate(0, 0, 1)
 	return m.getMovements(tomorrow)
+}
+
+// locationFromAbbreviation returns a Location struct for a given abbreviation.
+// If no location name can be found, the name is also set to the abbreviation.
+func locationFromAbbreviation(abbreviation string) Location {
+	name := abbreviation
+	if locationName, ok := shipinfo.LocationAbbreviationMap[abbreviation]; ok {
+		name = locationName
+	}
+	return Location{
+		Abbreviation: abbreviation,
+		Name:         name,
+	}
 }

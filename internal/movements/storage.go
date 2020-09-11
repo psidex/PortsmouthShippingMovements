@@ -2,6 +2,7 @@ package movements
 
 import (
 	"github.com/psidex/PortsmouthShippingMovements/internal/images"
+	"github.com/psidex/PortsmouthShippingMovements/internal/shipinfo"
 	"sync"
 )
 
@@ -43,14 +44,15 @@ func (m MovementStorage) TomorrowMovements() []Movement {
 	return tmp
 }
 
-// setMovementImages sets the images for all the given movements.
-func (m MovementStorage) setMovementImages(movementSlice []Movement) {
+// postProcessMovements does post processing for the scraped movement data, such as setting an image.
+func (m MovementStorage) postProcessMovements(movementSlice []Movement) {
 	// We have to iterate this way so we can change the values in the slice. Using range would make a copy of the
 	// elements which means we wouldn't be able to change the actual values inside the slice.
 	for i := 0; i < len(movementSlice); i++ {
 		if movementSlice[i].Type == Move {
 			url := m.imageUrlStore.GetUrlForShip(movementSlice[i].Name)
 			movementSlice[i].ImageUrl = url
+			movementSlice[i].VesselFinderUrl = shipinfo.GetShipVesselFinderUrl(movementSlice[i].Name)
 		}
 	}
 }
@@ -61,7 +63,7 @@ func (m *MovementStorage) SetTodayMovements(movementSlice []Movement) {
 	defer m.mu.Unlock()
 	tmp := make([]Movement, len(movementSlice))
 	copy(tmp, movementSlice)
-	m.setMovementImages(tmp)
+	m.postProcessMovements(tmp)
 	m.todayMovements = tmp
 }
 
@@ -71,6 +73,6 @@ func (m *MovementStorage) SetTomorrowMovements(movementSlice []Movement) {
 	defer m.mu.Unlock()
 	tmp := make([]Movement, len(movementSlice))
 	copy(tmp, movementSlice)
-	m.setMovementImages(tmp)
+	m.postProcessMovements(tmp)
 	m.tomorrowMovements = tmp
 }

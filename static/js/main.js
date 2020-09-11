@@ -14,9 +14,13 @@ function fromToAbbreviation(movement) {
     return '';
 }
 
+// Constructs a <li> element for a movement.
 function addLi(movement, collapsible) {
     const movementLi = document.createElement('li');
 
+    //
+    // HEADER
+    //
     const headerDiv = document.createElement('div');
     const movementTitleP = document.createElement('p');
     const fromToP = document.createElement('p');
@@ -37,17 +41,35 @@ function addLi(movement, collapsible) {
     headerDiv.appendChild(fromToP);
     movementLi.appendChild(headerDiv);
 
-    const bodyDiv = document.createElement('div');
-    const bodyImg = document.createElement('img');
-    const bodyP = document.createElement('p');
+    // If it's a ship movement and not a notice, add a body.
+    if (movement.type === 0) {
+        //
+        // BODY
+        //
+        const bodyDiv = document.createElement('div');
+        const bodyImg = document.createElement('img');
+        const bodyP = document.createElement('p');
+        const bodyInfoA = document.createElement('a');
+        const bodyInfoImg = document.createElement('img');
 
-    bodyDiv.setAttribute('class', 'collapsible-body');
-    bodyImg.setAttribute('src', movement.imageUrl);
-    bodyP.textContent = fromToSentence(movement);
+        bodyDiv.setAttribute('class', 'collapsible-body');
+        bodyImg.setAttribute('src', movement.imageUrl);
+        bodyP.textContent = fromToSentence(movement);
+        bodyInfoA.setAttribute('href', movement.infoUrl);
+        bodyInfoA.setAttribute('target', '_blank');
+        bodyInfoA.setAttribute('class', 'tooltipped');
+        bodyInfoA.setAttribute('data-position', 'bottom');
+        bodyInfoA.setAttribute('data-tooltip', 'Vessel Finder');
+        bodyInfoImg.setAttribute('class', 'info-link-img');
+        bodyInfoImg.setAttribute('src', '/images/compass.svg');
 
-    bodyDiv.appendChild(bodyImg);
-    bodyDiv.appendChild(bodyP);
-    movementLi.appendChild(bodyDiv);
+        bodyInfoA.appendChild(bodyInfoImg);
+
+        bodyDiv.appendChild(bodyImg);
+        bodyDiv.appendChild(bodyP);
+        bodyDiv.appendChild(bodyInfoA);
+        movementLi.appendChild(bodyDiv);
+    }
 
     if (movement.name.startsWith('HMS')) {
         movementLi.setAttribute('class', 'active');
@@ -80,6 +102,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Init after all the HTML is setup.
-    const elems = document.querySelectorAll('.collapsible');
-    M.Collapsible.init(elems, {accordion: false});
+    const collapsibleElems = document.querySelectorAll('.collapsible');
+    M.Collapsible.init(collapsibleElems, {accordion: false});
+
+    const tooltippedElems = document.querySelectorAll('.tooltipped');
+    M.Tooltip.init(tooltippedElems, {});
 });

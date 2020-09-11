@@ -18,3 +18,9 @@ img {
     text-align: left;
     margin: 0;
 }
+
+.info-link-img {
+    /* Filter from https://codepen.io/sosuke/pen/Pjoqqp */
+    filter: invert(8%) sepia(100%) saturate(7431%) hue-rotate(248deg) brightness(98%) contrast(144%);
+    height: 1.25em;
+}

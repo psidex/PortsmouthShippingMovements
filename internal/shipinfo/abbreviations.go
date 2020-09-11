@@ -1,6 +1,6 @@
-package movements
+package shipinfo
 
-var abbreviationMap = map[string]string{
+var LocationAbbreviationMap = map[string]string{
 	"SRJ":     "SOUTH RAILWAY JETTY",
 	"SRJ(S)":  "SOUTH RAILWAY JETTY (SOUTH)",
 	"SRJ(C)":  "SOUTH RAILWAY JETTY (CENTRE)",
@@ -50,17 +50,4 @@ var abbreviationMap = map[string]string{
 	"HORB":    "HOLD OFF RE-BERTH",
 	"WIND":    "WIND SHIP (COLD MOVE USING TUGS TO TURN SHIP AND RE-BERTH)",
 	"LNTM":    "LOCAL NOTICE TO MARINERS",
-}
-
-// locationFromAbbreviation returns a Location struct for a given abbreviation.
-// If no location name can be found, the name is also set to the abbreviation.
-func locationFromAbbreviation(abbreviation string) Location {
-	name := abbreviation
-	if locationName, ok := abbreviationMap[abbreviation]; ok {
-		name = locationName
-	}
-	return Location{
-		Abbreviation: abbreviation,
-		Name:         name,
-	}
 }
