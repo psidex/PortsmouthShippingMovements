@@ -2,6 +2,19 @@ div {
     text-align: center;
 }
 
-.card {
-    background-color: whitesmoke;
+img {
+    height: 10em;
+}
+
+.text-bold {
+    font-weight: bold;
+}
+
+.right-margin {
+    margin: 0 0 0 auto;
+}
+
+.movement-title {
+    text-align: left;
+    margin: 0;
 }
