@@ -1,5 +1,6 @@
 package shipinfo
 
+// LocationAbbreviationMap is a string:string map of abbreviation to full name.
 var LocationAbbreviationMap = map[string]string{
 	"SRJ":     "SOUTH RAILWAY JETTY",
 	"SRJ(S)":  "SOUTH RAILWAY JETTY (SOUTH)",
