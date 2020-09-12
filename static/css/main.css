@@ -3,7 +3,7 @@ div {
 }
 
 img {
-    width: 100%;
+    width: 75%;
 }
 
 .text-bold {
@@ -26,6 +26,13 @@ img {
     /* Filter from https://codepen.io/sosuke/pen/Pjoqqp */
     filter: invert(8%) sepia(100%) saturate(7431%) hue-rotate(248deg) brightness(98%) contrast(144%);
     height: 1.25em;
+}
+
+@media (max-width:1500px) {
+    /* Width under 1500, screen is small enough that picture can be max possible width. */
+    img {
+        width: 100%;
+    }
 }
 
 @media (max-width:650px) {
