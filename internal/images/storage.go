@@ -66,23 +66,19 @@ func (s ShipImageUrlStorage) GetUrlForShip(shipName string) string {
 		return url
 	}
 
-	log.Printf("Searching BingApi API for images of ship: %s", shipName)
-
+	log.Printf("Searching Bing API for images of ship: %s", shipName)
 	url, err := s.imageSearchApi.SearchForImage(shipName)
 	if err != nil {
 		log.Printf("Error searching for image: %v", err)
 		return ""
 	}
 
-	if url != "" {
-		// Only save if we actually have a url.
-		err := s.saveUrlToFile(shipName, url)
-		if err == nil {
-			// If there was an error writing to the file, not saving the url in mem will trigger another write attempt
-			// next time.
-			s.memory[shipName] = url
-		}
+	err = s.saveUrlToFile(shipName, url)
+	if err != nil {
+		// Error writing to the file, don't save the url in memory to trigger another write attempt next time.
+		return url
 	}
 
+	s.memory[shipName] = url
 	return url
 }
