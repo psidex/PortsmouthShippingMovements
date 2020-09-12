@@ -12,6 +12,7 @@ img {
 
 .from-to-abbrv {
     margin: 0 0 0 auto;
+    text-align: right;
 }
 
 .movement-title {
@@ -27,14 +28,14 @@ img {
     height: 1.25em;
 }
 
-@media (max-width:470px) {
+@media (max-width:650px) {
     /* Screen is getting smaller, get rid of container effect. */
     .container {
         width: 100%;
     }
 }
 
-@media (max-width:400px) {
+@media (max-width:500px) {
     /* To small to keep the "abbreviation to abbreviation" text, also expand column size. */
     .from-to-abbrv {
         display: none;
