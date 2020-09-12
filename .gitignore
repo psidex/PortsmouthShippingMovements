@@ -28,5 +28,7 @@
 *.syso
 *.zip
 *.log
-/imagestorage/
+/imagestorage
 config.json
+/node_modules
+package-lock.json

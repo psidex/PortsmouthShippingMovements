@@ -1,3 +1,5 @@
+import CreateElement from './dom.js';
+
 const apiRoute = '/api/movements';
 
 function fromToSentence(movement) {
@@ -16,29 +18,27 @@ function fromToAbbreviation(movement) {
 
 // Constructs a <li> element for a movement.
 function addLi(movement, collapsible) {
-    const movementLi = document.createElement('li');
+    const movementLi = CreateElement('li');
+    if (movement.name.startsWith('HMS')) {
+        // This ship is Navy so make it stand out.
+        movementLi.setAttribute('class', 'active');
+    }
 
     //
     // HEADER
     //
-    const headerDiv = document.createElement('div');
-    const movementTitleP = document.createElement('p');
-    const fromToP = document.createElement('p');
+    const headerDiv = CreateElement('div', { class: 'collapsible-header' });
+    const movementTitleP = CreateElement('p', { class: 'movement-title' }, `${movement.time} - ${movement.name}`);
+    const fromToP = CreateElement('p', { class: 'from-to-abbrv' }, fromToAbbreviation(movement));
 
-    headerDiv.setAttribute('class', 'collapsible-header');
-
-    movementTitleP.textContent = `${movement.time} - ${movement.name}`;
-    movementTitleP.setAttribute('class', 'movement-title');
     if (!movement.name.startsWith('MV')) {
         // All the ferries are "MV", anything not a ferry could be interesting.
         movementTitleP.setAttribute('class', 'movement-title text-bold');
     }
 
-    fromToP.textContent = fromToAbbreviation(movement);
-    fromToP.setAttribute('class', 'right-margin');
-
     headerDiv.appendChild(movementTitleP);
     headerDiv.appendChild(fromToP);
+
     movementLi.appendChild(headerDiv);
 
     // If it's a ship movement and not a notice, add a body.
@@ -46,34 +46,30 @@ function addLi(movement, collapsible) {
         //
         // BODY
         //
-        const bodyDiv = document.createElement('div');
-        const bodyImg = document.createElement('img');
-        const bodyP = document.createElement('p');
-        const bodyInfoA = document.createElement('a');
-        const bodyInfoImg = document.createElement('img');
-
-        bodyDiv.setAttribute('class', 'collapsible-body');
-        bodyImg.setAttribute('src', movement.imageUrl);
-        bodyP.textContent = fromToSentence(movement);
-        bodyInfoA.setAttribute('href', movement.infoUrl);
-        bodyInfoA.setAttribute('target', '_blank');
-        bodyInfoA.setAttribute('class', 'tooltipped');
-        bodyInfoA.setAttribute('data-position', 'bottom');
-        bodyInfoA.setAttribute('data-tooltip', 'Vessel Finder');
-        bodyInfoImg.setAttribute('class', 'info-link-img');
-        bodyInfoImg.setAttribute('src', '/images/compass.svg');
+        const bodyDiv = CreateElement('div', { class: 'collapsible-body' });
+        const bodyImg = CreateElement('img', { src: movement.imageUrl });
+        const bodyP = CreateElement('p', {}, fromToSentence(movement));
+        const bodyInfoA = CreateElement('a', {
+            href: movement.infoUrl,
+            target: '_blank',
+            class: 'tooltipped',
+            'data-position': 'bottom',
+            'data-tooltip': 'Vessel Finder',
+        });
+        const bodyInfoImg = CreateElement('img', {
+            class: 'info-link-img',
+            src: '/images/compass.svg',
+        });
 
         bodyInfoA.appendChild(bodyInfoImg);
 
         bodyDiv.appendChild(bodyImg);
         bodyDiv.appendChild(bodyP);
         bodyDiv.appendChild(bodyInfoA);
+
         movementLi.appendChild(bodyDiv);
     }
 
-    if (movement.name.startsWith('HMS')) {
-        movementLi.setAttribute('class', 'active');
-    }
     collapsible.appendChild(movementLi);
 }
 
@@ -103,7 +99,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Init after all the HTML is setup.
     const collapsibleElems = document.querySelectorAll('.collapsible');
-    M.Collapsible.init(collapsibleElems, {accordion: false});
+    M.Collapsible.init(collapsibleElems, { accordion: false });
 
     const tooltippedElems = document.querySelectorAll('.tooltipped');
     M.Tooltip.init(tooltippedElems, {});
