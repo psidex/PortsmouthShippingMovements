@@ -1,3 +1,24 @@
+/* Rules for sticky footer */
+/* https://materializecss.com/footer.html */
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+/* End rules for sticky footer */
+
+.page-footer {
+    padding: 0;
+}
+.page-footer, .page-footer * {
+    background-color: whitesmoke !important;
+    color: gray !important;
+}
+
 div {
     text-align: center;
 }

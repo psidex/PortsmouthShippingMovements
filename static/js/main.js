@@ -1,4 +1,5 @@
 import CreateElement from './dom.js';
+import UpdateFooter from './footer.js';
 
 const apiRoute = '/api/movements';
 
@@ -74,6 +75,8 @@ function addLi(movement, collapsible) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    await UpdateFooter();
+
     const todayCollapsible = document.querySelector('#todayCollapsible');
     const tomorrowCollapsible = document.querySelector('#tomorrowCollapsible');
 
