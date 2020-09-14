@@ -76,7 +76,7 @@ func (s ShipImageUrlStorage) GetUrlForShip(shipName string) string {
 	// Prepend "Portsmouth " so that a generic name like "TUG" will still show a relevant image.
 	url, err := s.imageSearchApi.SearchForImage("Portsmouth " + shipName)
 	if err != nil {
-		log.Printf("Error searching for image: %v", err)
+		log.Printf("Error searching for image: %s", err)
 		return ""
 	}
 

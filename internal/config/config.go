@@ -21,16 +21,16 @@ func LoadConfig() (Config, error) {
 
 	insideDocker := os.Getenv("INSIDE_DOCKER")
 	if insideDocker != "" {
+		log.Println("Running inside Docker")
 		// If running in Docker and you want to mount a volume, mount it at "/data".
 		// If doing this, you probably also want to prepend the other storage paths with "/data/".
 		viper.AddConfigPath("/data")
 		viper.SetDefault("image_storage_path", "/data/imagestorage")
 		viper.SetDefault("access_log_path", "/data/access.log")
-		log.Println("Running inside Docker")
 	} else {
+		log.Println("Not running inside Docker")
 		viper.SetDefault("image_storage_path", "./imagestorage")
 		viper.SetDefault("access_log_path", "./access.log")
-		log.Println("Not running inside Docker")
 	}
 
 	err := viper.ReadInConfig()

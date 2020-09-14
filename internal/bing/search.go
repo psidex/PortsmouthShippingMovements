@@ -8,11 +8,11 @@ import (
 	"time"
 )
 
-// apiRoute is the base route for the image search API.
-const apiRoute = "https://api.cognitive.microsoft.com/bing/v7.0/images/search?q="
+// baseUrl is the base route for the image search API.
+const baseUrl = "https://api.cognitive.microsoft.com/bing/v7.0/images/search?q="
 
 // imageSearch represents the API response from a BingApi image search API request.
-// Thanks https://mholt.github.io/json-to-go/
+// https://mholt.github.io/json-to-go/
 type imageSearch struct {
 	Type            string `json:"_type"`
 	Instrumentation struct {
@@ -73,8 +73,8 @@ type imageSearch struct {
 
 // ImageSearchApi contains methods for interacting with the Bing image search API.
 type ImageSearchApi struct {
-	client *http.Client // The http Client.
-	apiKey string       // The API key for the image search endpoint.
+	client *http.Client
+	apiKey string
 }
 
 // NewImageSearchApi creates a new ImageSearchApi.
@@ -84,7 +84,7 @@ func NewImageSearchApi(apiKey string) ImageSearchApi {
 
 // SearchForImage attempts to find a thumbnail image URL for the given query.
 func (i ImageSearchApi) SearchForImage(query string) (string, error) {
-	queryUrl := apiRoute + url.QueryEscape(query)
+	queryUrl := baseUrl + url.QueryEscape(query)
 	req, err := http.NewRequest("GET", queryUrl, nil)
 	if err != nil {
 		return "", err

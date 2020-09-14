@@ -8,33 +8,47 @@ import (
 	"github.com/psidex/PortsmouthShippingMovements/internal/config"
 	"github.com/psidex/PortsmouthShippingMovements/internal/images"
 	"github.com/psidex/PortsmouthShippingMovements/internal/movements"
+	"github.com/robfig/cron/v3"
 	"log"
 	"net/http"
 	"os"
 )
 
-func main() {
-	c, err := config.LoadConfig()
+// check checks if the error is not nil, if it is, log and exit with 1.
+func check(err error) {
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error during initialization: %s", err)
 	}
+}
 
+func main() {
+	// Read and parse config.
+	c, err := config.LoadConfig()
+	check(err)
+
+	// Set up webserver access log file.
 	accessLogFile, err := os.OpenFile(c.AccessLogPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 	defer accessLogFile.Close()
 
+	// Set up image storage, web scraper and then movement storage.
 	imageSearchApi := bing.NewImageSearchApi(c.BingImageSearchApiKey)
 	imageStore, err := images.NewShipImageUrlStorage(imageSearchApi, c.ImageStoragePath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 
 	scraper := movements.NewMovementScraper(c.ContactEmail)
-	movementStore := movements.NewMovementStorage(imageStore)
-	go movements.UpdateMovementsPeriodically(movementStore, scraper)
+	movementStore := movements.NewMovementStorage(imageStore, scraper)
 
+	// Load initial data.
+	movements.UpdateMovements(movementStore)
+
+	// Start a cron to run the update function at midnight, 8am, and 4pm.
+	cr := cron.New()
+	_, err = cr.AddFunc("0 0,8,16 * * *", func() { movements.UpdateMovements(movementStore) })
+	check(err)
+	cr.Start()
+
+	// Set up all the web server stuff.
 	apiRoute := api.MovementApi{MovementStore: movementStore}
 
 	router := mux.NewRouter().StrictSlash(true)
@@ -42,8 +56,9 @@ func main() {
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 
 	loggedRouter := handlers.LoggingHandler(accessLogFile, router)
+
+	// Start serving.
+	log.Println("Listening on http://127.0.0.1:8080")
 	err = http.ListenAndServe(":8080", loggedRouter)
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 }
