@@ -1,6 +1,9 @@
 package shipinfo
 
-import "regexp"
+import (
+	"net/url"
+	"regexp"
+)
 
 const titleRegexString = "^(MV )"
 
@@ -16,5 +19,5 @@ func shipNameFromTitle(title string) string {
 
 // GetShipVesselFinderUrl returns a URL to a vessel finder search for the given ship.
 func GetShipVesselFinderUrl(shipTitle string) string {
-	return "https://www.vesselfinder.com/vessels?name=" + shipNameFromTitle(shipTitle)
+	return "https://www.vesselfinder.com/vessels?name=" + url.QueryEscape(shipNameFromTitle(shipTitle))
 }
