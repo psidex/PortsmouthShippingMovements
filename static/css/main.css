@@ -28,6 +28,11 @@ img {
     height: 1.25em;
 }
 
+.collapsible-body {
+    padding-top: 1.5em;
+    padding-bottom: 1em;
+}
+
 @media (max-width:1500px) {
     /* Width under 1500, screen is small enough that picture can be max possible width. */
     img {

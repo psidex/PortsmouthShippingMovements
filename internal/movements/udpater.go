@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// UpdateMovementsPeriodically updates the 2 movement lists in the MovementStorage every sleepDuration.
-func UpdateMovementsPeriodically(movementStore *MovementStorage, scraper MovementScraper, sleepDuration time.Duration) {
+// UpdateMovementsPeriodically periodically updates the 2 movement lists in the given MovementStorage.
+func UpdateMovementsPeriodically(movementStore *MovementStorage, scraper MovementScraper) {
 	for {
 		log.Println("Updating movementStore todayMovements")
 		todayMovements, err := scraper.GetTodayMovements()
@@ -24,6 +24,6 @@ func UpdateMovementsPeriodically(movementStore *MovementStorage, scraper Movemen
 			movementStore.SetTomorrowMovements(tomorrowMovements)
 		}
 
-		time.Sleep(sleepDuration)
+		time.Sleep(time.Hour * 8)
 	}
 }

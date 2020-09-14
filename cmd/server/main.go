@@ -11,7 +11,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 )
 
 func main() {
@@ -34,7 +33,7 @@ func main() {
 
 	scraper := movements.NewMovementScraper(c.ContactEmail)
 	movementStore := movements.NewMovementStorage(imageStore)
-	go movements.UpdateMovementsPeriodically(movementStore, scraper, time.Hour*8)
+	go movements.UpdateMovementsPeriodically(movementStore, scraper)
 
 	apiRoute := api.MovementApi{MovementStore: movementStore}
 

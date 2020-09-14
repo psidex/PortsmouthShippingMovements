@@ -49,23 +49,23 @@ function addLi(movement, collapsible) {
         const bodyDiv = CreateElement('div', { class: 'collapsible-body' });
         const bodyImg = CreateElement('img', { src: movement.imageUrl });
         const bodyP = CreateElement('p', {}, fromToSentence(movement));
-        const bodyInfoA = CreateElement('a', {
+        const vesselFinderA = CreateElement('a', {
             href: movement.infoUrl,
             target: '_blank',
             class: 'tooltipped',
             'data-position': 'bottom',
-            'data-tooltip': 'Vessel Finder',
+            'data-tooltip': 'Search on Vessel Finder',
         });
-        const bodyInfoImg = CreateElement('img', {
+        const vesselFinderImg = CreateElement('img', {
             class: 'info-link-img',
             src: '/images/compass.svg',
         });
 
-        bodyInfoA.appendChild(bodyInfoImg);
+        vesselFinderA.appendChild(vesselFinderImg);
 
         bodyDiv.appendChild(bodyImg);
         bodyDiv.appendChild(bodyP);
-        bodyDiv.appendChild(bodyInfoA);
+        bodyDiv.appendChild(vesselFinderA);
 
         movementLi.appendChild(bodyDiv);
     }
