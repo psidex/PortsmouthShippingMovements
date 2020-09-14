@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"strings"
 )
 
 // ShipImageUrlStorage manages the storage and caching of ship image urls.
@@ -66,8 +67,14 @@ func (s ShipImageUrlStorage) GetUrlForShip(shipName string) string {
 		return url
 	}
 
+	if strings.Contains(shipName, ",") {
+		// Multiple ships referenced in one movement, just find image for first one.
+		shipName = strings.Split(shipName, ",")[0]
+	}
+
 	log.Printf("Searching Bing API for images of ship: %s", shipName)
-	url, err := s.imageSearchApi.SearchForImage(shipName)
+	// Prepend "Portsmouth " so that a generic name like "TUG" will still show a relevant image.
+	url, err := s.imageSearchApi.SearchForImage("Portsmouth " + shipName)
 	if err != nil {
 		log.Printf("Error searching for image: %v", err)
 		return ""
