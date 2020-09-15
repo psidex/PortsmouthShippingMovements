@@ -58,6 +58,11 @@ func (s ShipImageUrlStorage) saveUrlToFile(shipName, imageUrl string) error {
 // GetUrlForShip takes a ship name and returns a string containing the URL to an image of that ship.
 // If an error occurs or an image can't be found, an empty string ("") is returned.
 func (s ShipImageUrlStorage) GetUrlForShip(shipName string) string {
+	// If there are multiple ships referenced in one movement, just get image for first one.
+	if strings.Contains(shipName, ",") {
+		shipName = strings.Split(shipName, ",")[0]
+	}
+
 	if url, ok := s.memory[shipName]; ok {
 		return url
 	}
@@ -65,11 +70,6 @@ func (s ShipImageUrlStorage) GetUrlForShip(shipName string) string {
 	if url, err := s.readUrlFromFile(shipName); err == nil {
 		s.memory[shipName] = url
 		return url
-	}
-
-	if strings.Contains(shipName, ",") {
-		// Multiple ships referenced in one movement, just find image for first one.
-		shipName = strings.Split(shipName, ",")[0]
 	}
 
 	log.Printf("Searching Bing API for images of ship: %s", shipName)
@@ -82,7 +82,8 @@ func (s ShipImageUrlStorage) GetUrlForShip(shipName string) string {
 
 	err = s.saveUrlToFile(shipName, url)
 	if err != nil {
-		// Error writing to the file, don't save the url in memory to trigger another write attempt next time.
+		log.Printf("Error writing image url to file: %s", err)
+		// Don't save the url in memory to trigger another write attempt next time.
 		return url
 	}
 

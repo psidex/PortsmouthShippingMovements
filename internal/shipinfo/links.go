@@ -5,7 +5,7 @@ import (
 	"regexp"
 )
 
-const titlePrefixRegexString = "^(MV )"
+const titlePrefixRegexString = "^(MV |SD )"
 
 var (
 	titlePrefixRegex = regexp.MustCompile(titlePrefixRegexString)

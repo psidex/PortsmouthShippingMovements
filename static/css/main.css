@@ -73,7 +73,13 @@ img {
     .from-to-abbrv {
         display: none;
     }
-    div.col.s6 {
+    .col.s6 {
         padding: 0;
+    }
+    .row {
+        margin: 0;
+    }
+    h4, h5 {
+        margin: 0 0 0.5em;
     }
 }
