@@ -8,6 +8,7 @@ import (
 
 // Config contains the application configuration, to be unmarshalled into by Viper.
 type Config struct {
+	UpdateCronString      string `mapstructure:"update_cron_string"`
 	ContactEmail          string `mapstructure:"contact_email"`
 	ImageStoragePath      string `mapstructure:"image_storage_path"`
 	AccessLogPath         string `mapstructure:"access_log_path"`
@@ -18,6 +19,9 @@ type Config struct {
 func LoadConfig() (Config, error) {
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
+
+	// Update stored movements on the hour at midnight, 6am, midday, and 6pm.
+	viper.SetDefault("update_cron_string", "0 0,6,12,18 * * *")
 
 	insideDocker := os.Getenv("INSIDE_DOCKER")
 	if insideDocker != "" {
@@ -45,6 +49,7 @@ func LoadConfig() (Config, error) {
 	}
 
 	log.Println("Configuration loaded")
+	log.Printf("update_cron_string: %s", config.UpdateCronString)
 	log.Printf("contact_email: %s", config.ContactEmail)
 	log.Printf("image_storage_path: %s", config.ImageStoragePath)
 	log.Printf("access_log_path: %s", config.AccessLogPath)

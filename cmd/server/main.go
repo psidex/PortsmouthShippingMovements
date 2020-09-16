@@ -44,7 +44,7 @@ func main() {
 
 	// Start a cron to run the update function at midnight, 8am, and 4pm.
 	cr := cron.New()
-	_, err = cr.AddFunc("0 0,8,16 * * *", func() { movements.UpdateMovements(movementStore) })
+	_, err = cr.AddFunc(c.UpdateCronString, func() { movements.UpdateMovements(movementStore) })
 	check(err)
 	cr.Start()
 
