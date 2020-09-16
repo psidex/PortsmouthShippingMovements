@@ -9,7 +9,7 @@ https://psm.simonj.tech/
 
 A website to show Portsmouth Harbours shipping movements
 
-The data gets scraped every 8 hours from the links on the ["Queen's Harbour Master Portsmouth" page](https://www.royalnavy.mod.uk/qhm/portsmouth/shipping-movements).
+The data gets scraped every 6 hours from the links on the ["QHM Portsmouth" page](https://www.royalnavy.mod.uk/qhm/portsmouth/shipping-movements).
 
 ![demo image](./demo.png)
 
