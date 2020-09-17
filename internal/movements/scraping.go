@@ -19,11 +19,11 @@ type MovementScraper struct {
 	uaString string       // uaString is the custom User Agent string for web requests made by this program.
 }
 
-// NewMovementScraper creates a new MovementScraper.
-func NewMovementScraper(contactEmail string) MovementScraper {
+// NewMovementScraper creates a new MovementScraper for scraping movement data from the QHM page.
+func NewMovementScraper(client *http.Client, contactEmail string) MovementScraper {
 	return MovementScraper{
 		uaString: "PortsmouthShippingMovements/0.1 (" + contactEmail + ")",
-		client:   &http.Client{Timeout: time.Second * 10},
+		client:   client,
 	}
 }
 

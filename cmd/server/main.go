@@ -12,6 +12,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 // check checks if the error is not nil, if it is, log and exit with 1.
@@ -31,13 +32,18 @@ func main() {
 	check(err)
 	defer accessLogFile.Close()
 
+	// Custom http client for all web requests (Bing API and scraper for QHM page).
+	// The API and scraper can share a client as the API will only be requested after a scraping has happened, so there
+	// won't be any blocking.
+	httpClient := &http.Client{Timeout: time.Second * 10}
+
 	// Set up image storage, web scraper and then movement storage.
-	imageSearchApi := bing.NewImageSearchApi(c.BingImageSearchApiKey)
-	imageStore, err := images.NewShipImageUrlStorage(imageSearchApi, c.ImageStoragePath)
+	imageSearchApi := bing.NewImageSearchApi(httpClient, c.BingImageSearchApiKey)
+	imageUrlStore, err := images.NewShipImageUrlStorage(imageSearchApi, c.ImageStoragePath)
 	check(err)
 
-	scraper := movements.NewMovementScraper(c.ContactEmail)
-	movementStore := movements.NewMovementStorage(imageStore, scraper)
+	scraper := movements.NewMovementScraper(httpClient, c.ContactEmail)
+	movementStore := movements.NewMovementStorage(imageUrlStore, scraper)
 
 	// Load initial data.
 	movements.UpdateMovements(movementStore)

@@ -78,8 +78,8 @@ type ImageSearchApi struct {
 }
 
 // NewImageSearchApi creates a new ImageSearchApi.
-func NewImageSearchApi(apiKey string) ImageSearchApi {
-	return ImageSearchApi{client: &http.Client{Timeout: time.Second * 10}, apiKey: apiKey}
+func NewImageSearchApi(client *http.Client, apiKey string) ImageSearchApi {
+	return ImageSearchApi{client: client, apiKey: apiKey}
 }
 
 // SearchForImage attempts to find a thumbnail image URL for the given query.

@@ -46,6 +46,7 @@ func (m MovementStorage) GetMovements() (todayMovements []Movement, tomorrowMove
 func (m MovementStorage) postProcessMovements(movementSlice []Movement) {
 	// We have to iterate this way so we can change the values in the slice. Using range would make a copy of the
 	// elements which means we wouldn't be able to change the actual values inside the slice.
+	// This could be sped up using goroutines but the API has a req/sec limit that I don't want to hit.
 	for i := 0; i < len(movementSlice); i++ {
 		if movementSlice[i].Type == Move {
 			url := m.imageUrlStore.GetUrlForShip(movementSlice[i].Name)
