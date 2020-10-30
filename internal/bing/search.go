@@ -9,80 +9,66 @@ import (
 )
 
 // baseUrl is the base route for the image search API.
-const baseUrl = "https://api.bing.microsoft.com/v7.0/search?q="
+const baseUrl = "https://api.bing.microsoft.com/v7.0/images/search?count=1&&mkt=en-gb&safeSearch=moderate&q=="
 
 // imageSearch represents the API response from a BingApi image search API request.
 // https://mholt.github.io/json-to-go/
 type imageSearch struct {
-	Type         string `json:"_type"`
+	Type            string `json:"_type"`
+	Instrumentation struct {
+		Type string `json:"_type"`
+	} `json:"instrumentation"`
+	ReadLink     string `json:"readLink"`
+	WebSearchURL string `json:"webSearchUrl"`
 	QueryContext struct {
-		OriginalQuery string `json:"originalQuery"`
+		OriginalQuery           string `json:"originalQuery"`
+		AlterationDisplayQuery  string `json:"alterationDisplayQuery"`
+		AlterationOverrideQuery string `json:"alterationOverrideQuery"`
+		AlterationMethod        string `json:"alterationMethod"`
+		AlterationType          string `json:"alterationType"`
 	} `json:"queryContext"`
-	WebPages struct {
-		WebSearchURL          string `json:"webSearchUrl"`
-		TotalEstimatedMatches int    `json:"totalEstimatedMatches"`
-		Value                 []struct {
-			ID               string    `json:"id"`
-			Name             string    `json:"name"`
-			URL              string    `json:"url"`
-			IsFamilyFriendly bool      `json:"isFamilyFriendly"`
-			DisplayURL       string    `json:"displayUrl"`
-			Snippet          string    `json:"snippet"`
-			DateLastCrawled  time.Time `json:"dateLastCrawled"`
-			Language         string    `json:"language"`
-			IsNavigational   bool      `json:"isNavigational"`
-		} `json:"value"`
-	} `json:"webPages"`
-	Images struct {
-		ID               string `json:"id"`
-		ReadLink         string `json:"readLink"`
-		WebSearchURL     string `json:"webSearchUrl"`
-		IsFamilyFriendly bool   `json:"isFamilyFriendly"`
-		Value            []struct {
-			WebSearchURL       string    `json:"webSearchUrl"`
-			Name               string    `json:"name"`
-			ThumbnailURL       string    `json:"thumbnailUrl"`
-			DatePublished      time.Time `json:"datePublished"`
-			ContentURL         string    `json:"contentUrl"`
-			HostPageURL        string    `json:"hostPageUrl"`
-			ContentSize        string    `json:"contentSize"`
-			EncodingFormat     string    `json:"encodingFormat"`
-			HostPageDisplayURL string    `json:"hostPageDisplayUrl"`
-			Width              int       `json:"width"`
-			Height             int       `json:"height"`
-			Thumbnail          struct {
-				Width  int `json:"width"`
-				Height int `json:"height"`
-			} `json:"thumbnail"`
-		} `json:"value"`
-	} `json:"images"`
-	RelatedSearches struct {
-		ID    string `json:"id"`
-		Value []struct {
-			Text         string `json:"text"`
-			DisplayText  string `json:"displayText"`
-			WebSearchURL string `json:"webSearchUrl"`
-		} `json:"value"`
+	TotalEstimatedMatches int `json:"totalEstimatedMatches"`
+	NextOffset            int `json:"nextOffset"`
+	CurrentOffset         int `json:"currentOffset"`
+	Value                 []struct {
+		WebSearchURL       string    `json:"webSearchUrl"`
+		Name               string    `json:"name"`
+		ThumbnailURL       string    `json:"thumbnailUrl"`
+		DatePublished      time.Time `json:"datePublished"`
+		IsFamilyFriendly   bool      `json:"isFamilyFriendly"`
+		ContentURL         string    `json:"contentUrl"`
+		HostPageURL        string    `json:"hostPageUrl"`
+		ContentSize        string    `json:"contentSize"`
+		EncodingFormat     string    `json:"encodingFormat"`
+		HostPageDisplayURL string    `json:"hostPageDisplayUrl"`
+		Width              int       `json:"width"`
+		Height             int       `json:"height"`
+		Thumbnail          struct {
+			Width  int `json:"width"`
+			Height int `json:"height"`
+		} `json:"thumbnail"`
+		ImageInsightsToken string `json:"imageInsightsToken"`
+		InsightsMetadata   struct {
+			RecipeSourcesCount  int `json:"recipeSourcesCount"`
+			PagesIncludingCount int `json:"pagesIncludingCount"`
+			AvailableSizesCount int `json:"availableSizesCount"`
+		} `json:"insightsMetadata"`
+		ImageID     string `json:"imageId"`
+		AccentColor string `json:"accentColor"`
+	} `json:"value"`
+	PivotSuggestions []struct {
+		Pivot       string        `json:"pivot"`
+		Suggestions []interface{} `json:"suggestions"`
+	} `json:"pivotSuggestions"`
+	RelatedSearches []struct {
+		Text         string `json:"text"`
+		DisplayText  string `json:"displayText"`
+		WebSearchURL string `json:"webSearchUrl"`
+		SearchLink   string `json:"searchLink"`
+		Thumbnail    struct {
+			ThumbnailURL string `json:"thumbnailUrl"`
+		} `json:"thumbnail"`
 	} `json:"relatedSearches"`
-	RankingResponse struct {
-		Mainline struct {
-			Items []struct {
-				AnswerType  string `json:"answerType"`
-				ResultIndex int    `json:"resultIndex,omitempty"`
-				Value       struct {
-					ID string `json:"id"`
-				} `json:"value"`
-			} `json:"items"`
-		} `json:"mainline"`
-		Sidebar struct {
-			Items []struct {
-				AnswerType string `json:"answerType"`
-				Value      struct {
-					ID string `json:"id"`
-				} `json:"value"`
-			} `json:"items"`
-		} `json:"sidebar"`
-	} `json:"rankingResponse"`
 }
 
 // ImageSearchApi contains methods for interacting with the Bing image search API.
@@ -98,6 +84,7 @@ func NewImageSearchApi(client *http.Client, apiKey string) ImageSearchApi {
 
 // SearchForImage attempts to find a thumbnail image URL for the given query.
 func (i ImageSearchApi) SearchForImage(query string) (string, error) {
+	// TODO: Detect if hitting API request rate limit?
 	queryUrl := baseUrl + url.QueryEscape(query)
 	req, err := http.NewRequest("GET", queryUrl, nil)
 	if err != nil {
@@ -118,8 +105,8 @@ func (i ImageSearchApi) SearchForImage(query string) (string, error) {
 		return "", err
 	}
 
-	if len(data.Images.Value) <= 0 {
+	if len(data.Value) <= 0 {
 		return "", errors.New("no images found")
 	}
-	return data.Images.Value[0].ThumbnailURL, nil
+	return data.Value[0].ThumbnailURL, nil
 }
