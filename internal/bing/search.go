@@ -9,7 +9,7 @@ import (
 )
 
 // baseUrl is the base route for the image search API.
-const baseUrl = "https://api.bing.microsoft.com/v7.0/images/search?count=1&&mkt=en-gb&safeSearch=moderate&q=="
+const baseUrl = "https://api.bing.microsoft.com/v7.0/images/search?count=1&mkt=en-gb&safeSearch=moderate&q="
 
 // imageSearch represents the API response from a BingApi image search API request.
 // https://mholt.github.io/json-to-go/
