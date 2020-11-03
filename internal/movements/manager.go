@@ -59,6 +59,8 @@ func (m Manager) postProcessMovements(movementSlice []Movement) {
 				query = strings.Split(query, "&")[0]
 			}
 
+			query = strings.TrimSpace(query)
+
 			// Prepend "Portsmouth " to image search so that a generic name like "TUG" will still show a relevant image.
 			query = "Portsmouth " + query
 
