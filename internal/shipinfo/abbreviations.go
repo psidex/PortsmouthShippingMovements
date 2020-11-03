@@ -1,7 +1,7 @@
 package shipinfo
 
-// Abbreviations is a string:string map of abbreviation to full name.
-var Abbreviations = map[string]string{
+// LocationAbbreviations is a string:string map of location abbreviation to full name.
+var LocationAbbreviations = map[string]string{
 	"NAB":     "Nab Tower",
 	"SRJ":     "South Railway Jetty",
 	"SRJ (S)": "South Railway Jetty (South)",
@@ -51,5 +51,4 @@ var Abbreviations = map[string]string{
 	"TCL":     "Tank Cleaner",
 	"HORB":    "Hold Off Re-Berth",
 	"WIND":    "Wind Ship (Cold Move Using Tugs To Turn Ship And Re-Berth)",
-	"LNTM":    "Local Notice To Mariners",
 }

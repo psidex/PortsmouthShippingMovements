@@ -121,7 +121,7 @@ func (m Scraper) GetTomorrowMovements() ([]Movement, error) {
 // If no location name can be found, the name is also set to the abbreviation.
 func locationFromAbbreviation(abbreviation string) Location {
 	name := abbreviation
-	if locationName, ok := shipinfo.Abbreviations[abbreviation]; ok {
+	if locationName, ok := shipinfo.LocationAbbreviations[abbreviation]; ok {
 		name = locationName
 	}
 	return Location{
