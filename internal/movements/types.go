@@ -9,7 +9,7 @@ const (
 	Notice                     // Notice represents a notice from the Harbour Master.
 )
 
-// Location holds the names for a location.
+// Location holds the names for a single location.
 type Location struct {
 	Abbreviation string `json:"abbreviation"` // The abbreviation of the location.
 	Name         string `json:"name"`         // The full name of the location.

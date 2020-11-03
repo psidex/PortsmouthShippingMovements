@@ -17,7 +17,7 @@ func shipNameFromTitle(title string) string {
 	return titlePrefixRegex.ReplaceAllString(title, "")
 }
 
-// GetShipVesselFinderUrl returns a URL to a vessel finder search for the given ship.
-func GetShipVesselFinderUrl(shipTitle string) string {
+// GetVesselFinderUrl returns a URL to a vessel finder search for the given ship.
+func GetVesselFinderUrl(shipTitle string) string {
 	return "https://www.vesselfinder.com/vessels?name=" + url.QueryEscape(shipNameFromTitle(shipTitle))
 }

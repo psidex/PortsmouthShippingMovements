@@ -38,24 +38,24 @@ func main() {
 	httpClient := &http.Client{Timeout: time.Second * 10}
 
 	// Set up image storage, web scraper and then movement storage.
-	imageSearchApi := bing.NewImageSearchApi(httpClient, c.BingImageSearchApiKey)
-	imageUrlStore, err := images.NewShipImageUrlStorage(imageSearchApi, c.ImageStoragePath)
+	imageSearchApi := bing.NewImageSearchApi(httpClient, c.BingImageSearchApiKey, c.BingImageSearchBaseUrl)
+	imageUrlMan, err := images.NewUrlManager(imageSearchApi, c.ImageStoragePath)
 	check(err)
 
-	scraper := movements.NewMovementScraper(httpClient, c.ContactEmail)
-	movementStore := movements.NewMovementStorage(imageUrlStore, scraper)
+	scraper := movements.NewScraper(httpClient, c.ContactEmail)
+	movementMan := movements.NewManager(imageUrlMan, scraper)
 
 	// Load initial data.
-	movements.UpdateMovements(movementStore)
+	movements.UpdateMovements(movementMan)
 
 	// Start a cron to run the update function at midnight, 8am, and 4pm.
 	cr := cron.New()
-	_, err = cr.AddFunc(c.UpdateCronString, func() { movements.UpdateMovements(movementStore) })
+	_, err = cr.AddFunc(c.UpdateCronString, func() { movements.UpdateMovements(movementMan) })
 	check(err)
 	cr.Start()
 
 	// Set up all the web server stuff.
-	apiRoute := api.MovementApi{MovementStore: movementStore}
+	apiRoute := api.NewMovementApi(movementMan)
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/api/movements", apiRoute.GetShippingMovements)
@@ -64,7 +64,7 @@ func main() {
 	loggedRouter := handlers.LoggingHandler(accessLogFile, router)
 
 	// Start serving.
-	log.Println("Listening on http://127.0.0.1:8080")
+	log.Println("Listening on http://0.0.0.0:8080")
 	err = http.ListenAndServe(":8080", loggedRouter)
 	check(err)
 }

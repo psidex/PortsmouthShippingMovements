@@ -9,12 +9,17 @@ import (
 
 // MovementApi contains data and methods for serving movement related API functions.
 type MovementApi struct {
-	MovementStore *movements.MovementStorage
+	movementManager *movements.Manager
+}
+
+// NewMovementApi creates a new MovementApi.
+func NewMovementApi(MovementManager *movements.Manager) MovementApi {
+	return MovementApi{movementManager: MovementManager}
 }
 
 // GetShippingMovements is an endpoint for shipping movement data.
 func (a MovementApi) GetShippingMovements(w http.ResponseWriter, r *http.Request) {
-	todayMovements, tomorrowMovements := a.MovementStore.GetMovements()
+	todayMovements, tomorrowMovements := a.movementManager.GetMovements()
 
 	currentMovements := map[string][]movements.Movement{
 		"today":    todayMovements,

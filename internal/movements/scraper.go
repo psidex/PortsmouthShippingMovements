@@ -13,22 +13,22 @@ import (
 //const dailyMovementUrl = "http://127.0.0.1:8000/qhm.html?q="
 const dailyMovementUrl = "https://www.royalnavy.mod.uk/qhm/portsmouth/shipping-movements/daily-movements?date="
 
-// MovementScraper is for dealing with requesting and parsing movements from the QHM.
-type MovementScraper struct {
+// Scraper is for dealing with requesting and parsing movements from the QHM.
+type Scraper struct {
 	client   *http.Client // The http Client.
 	uaString string       // uaString is the custom User Agent string for web requests made by this program.
 }
 
-// NewMovementScraper creates a new MovementScraper for scraping movement data from the QHM page.
-func NewMovementScraper(client *http.Client, contactEmail string) MovementScraper {
-	return MovementScraper{
+// NewScraper creates a new Scraper for scraping movement data from the QHM page.
+func NewScraper(client *http.Client, contactEmail string) Scraper {
+	return Scraper{
 		uaString: "PortsmouthShippingMovements/0.1 (" + contactEmail + ")",
 		client:   client,
 	}
 }
 
 // dailyMovementHtmlToStruct takes the body from a request to dailyMovementUrl and extracts the movements.
-func (m MovementScraper) dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, error) {
+func (m Scraper) dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, error) {
 	var movements []Movement
 
 	doc, err := goquery.NewDocumentFromReader(body)
@@ -80,7 +80,7 @@ func (m MovementScraper) dailyMovementHtmlToStruct(body io.ReadCloser) ([]Moveme
 }
 
 // getMovements returns a slice of Movement structs containing the data for the given date.
-func (m MovementScraper) getMovements(dt time.Time) ([]Movement, error) {
+func (m Scraper) getMovements(dt time.Time) ([]Movement, error) {
 	query := dailyMovementUrl + dt.Format("02/01/2006") // dd/mm/yyyy
 
 	req, err := http.NewRequest("GET", query, nil)
@@ -105,13 +105,13 @@ func (m MovementScraper) getMovements(dt time.Time) ([]Movement, error) {
 }
 
 // GetTodayMovements returns a slice of Movement structs containing the data for today.
-func (m MovementScraper) GetTodayMovements() ([]Movement, error) {
+func (m Scraper) GetTodayMovements() ([]Movement, error) {
 	dt := time.Now()
 	return m.getMovements(dt)
 }
 
 // GetTomorrowMovements returns a slice of Movement structs containing the data for tomorrow.
-func (m MovementScraper) GetTomorrowMovements() ([]Movement, error) {
+func (m Scraper) GetTomorrowMovements() ([]Movement, error) {
 	dt := time.Now()
 	tomorrow := dt.AddDate(0, 0, 1)
 	return m.getMovements(tomorrow)
@@ -121,7 +121,7 @@ func (m MovementScraper) GetTomorrowMovements() ([]Movement, error) {
 // If no location name can be found, the name is also set to the abbreviation.
 func locationFromAbbreviation(abbreviation string) Location {
 	name := abbreviation
-	if locationName, ok := shipinfo.LocationAbbreviationMap[abbreviation]; ok {
+	if locationName, ok := shipinfo.Abbreviations[abbreviation]; ok {
 		name = locationName
 	}
 	return Location{
