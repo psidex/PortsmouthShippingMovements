@@ -7,6 +7,8 @@ import (
 	"net/url"
 )
 
+const apiUrl = "https://api.bing.microsoft.com/v7.0/images/search?count=1&mkt=en-GB&safeSearch=Strict&aspect=Wide&imageType=Photo&license=Share&q="
+
 // imageSearch holds the data needed from a Bing image search API request.
 type imageSearch struct {
 	Value []struct {
@@ -16,19 +18,18 @@ type imageSearch struct {
 
 // ImageSearchApi contains methods for interacting with the Bing image search API.
 type ImageSearchApi struct {
-	client  *http.Client
-	apiKey  string
-	baseUrl string // The base for creating an Image API request. Must end with "&q=".
+	client *http.Client
+	apiKey string
 }
 
 // NewImageSearchApi creates a new ImageSearchApi.
-func NewImageSearchApi(client *http.Client, apiKey string, baseUrl string) ImageSearchApi {
-	return ImageSearchApi{client: client, apiKey: apiKey, baseUrl: baseUrl}
+func NewImageSearchApi(client *http.Client, apiKey string) ImageSearchApi {
+	return ImageSearchApi{client: client, apiKey: apiKey}
 }
 
 // SearchForImage attempts to find a thumbnail image URL for the given query.
 func (i ImageSearchApi) SearchForImage(query string) (string, error) {
-	queryUrl := i.baseUrl + url.QueryEscape(query)
+	queryUrl := apiUrl + url.QueryEscape(query)
 	req, err := http.NewRequest("GET", queryUrl, nil)
 	if err != nil {
 		return "", err

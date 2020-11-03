@@ -8,12 +8,11 @@ import (
 
 // Config contains the application configuration, to be unmarshalled into by Viper.
 type Config struct {
-	UpdateCronString       string `mapstructure:"update_cron_string"`
-	ContactEmail           string `mapstructure:"contact_email"`
-	ImageStoragePath       string `mapstructure:"image_storage_path"`
-	AccessLogPath          string `mapstructure:"access_log_path"`
-	BingImageSearchApiKey  string `mapstructure:"bing_image_search_api_key"`
-	BingImageSearchBaseUrl string `mapstructure:"bing_image_search_base_url"`
+	UpdateCronString      string `mapstructure:"update_cron_string"`
+	ContactEmail          string `mapstructure:"contact_email"`
+	ImageStoragePath      string `mapstructure:"image_storage_path"`
+	AccessLogPath         string `mapstructure:"access_log_path"`
+	BingImageSearchApiKey string `mapstructure:"bing_image_search_api_key"`
 }
 
 // LoadConfig looks for and read any config file found into the Config struct.

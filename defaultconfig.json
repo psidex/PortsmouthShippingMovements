@@ -3,6 +3,5 @@
   "contact_email": "me@gmail.com",
   "image_storage_path": "./imageurlstorage",
   "access_log_path": "./access.log",
-  "bing_image_search_api_key": "your_key",
-  "bing_image_search_base_url": "https://api.bing.microsoft.com/v7.0/images/search?count=1&mkt=en-GB&safeSearch=Strict&aspect=Wide&imageType=Photo&license=Share&q="
+  "bing_image_search_api_key": "your_key"
 }

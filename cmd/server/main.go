@@ -38,7 +38,7 @@ func main() {
 	httpClient := &http.Client{Timeout: time.Second * 10}
 
 	// Set up image storage, web scraper and then movement storage.
-	imageSearchApi := bing.NewImageSearchApi(httpClient, c.BingImageSearchApiKey, c.BingImageSearchBaseUrl)
+	imageSearchApi := bing.NewImageSearchApi(httpClient, c.BingImageSearchApiKey)
 	imageUrlMan, err := images.NewUrlManager(imageSearchApi, c.ImageStoragePath)
 	check(err)
 
