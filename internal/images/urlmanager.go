@@ -8,8 +8,8 @@ import (
 	"path"
 )
 
-// UrlManager manages the search, storage, and caching of image urls.
-// Urls are stored in memory and on disk as files, this ensures speed and persistence.
+// UrlManager manages the search and caching of image urls.
+// Urls are stored in memory and on disk as files, this ensures speed and a persistent cache.
 // We store and use image URLs instead of the actual images so we don't have to worry about hosting them (licensing, bandwidth issues, etc.).
 type UrlManager struct {
 	imageSearchApi bing.ImageSearchApi // The API for searching for images.

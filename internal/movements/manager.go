@@ -47,9 +47,9 @@ func (m Manager) GetMovements() (todayMovements []Movement, tomorrowMovements []
 func (m Manager) postProcessMovements(movementSlice []Movement) {
 	// We have to iterate this way so we can change the values in the slice. Using range would make a copy of the
 	// elements which means we wouldn't be able to change the actual values inside the slice.
-	// This could be sped up using goroutines but the API has a req/sec limit that I don't want to hit.
 	for i := 0; i < len(movementSlice); i++ {
 		if movementSlice[i].Type == Move {
+			// Create a query to search for an image of the ship.
 			query := movementSlice[i].Name
 
 			// If there are multiple ships referenced in one movement, just get image for first one.
