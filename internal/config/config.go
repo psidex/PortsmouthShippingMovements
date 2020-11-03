@@ -30,11 +30,11 @@ func LoadConfig() (Config, error) {
 		// If running in Docker and you want to mount a volume, mount it at "/data".
 		// If doing this, you probably also want to prepend the other storage paths with "/data/".
 		viper.AddConfigPath("/data")
-		viper.SetDefault("image_storage_path", "/data/imagestorage")
+		viper.SetDefault("image_storage_path", "/data/imageurlstorage")
 		viper.SetDefault("access_log_path", "/data/access.log")
 	} else {
 		log.Println("Not running inside Docker")
-		viper.SetDefault("image_storage_path", "./imagestorage")
+		viper.SetDefault("image_storage_path", "./imageurlstorage")
 		viper.SetDefault("access_log_path", "./access.log")
 	}
 
