@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"time"
 )
 
 // UrlManager manages the search and caching of image urls.
@@ -70,6 +71,14 @@ func (m UrlManager) GetUrl(query string) string {
 	log.Printf("Searching Bing API for images of: %s", query)
 	url, err := m.imageSearchApi.SearchForImage(query)
 	if err != nil {
+
+		// If error happened because of rate limit, wait 1 second then return recursive.
+		if err == bing.RequestRateError {
+			log.Println("Hit request rate limit, waiting and trying again")
+			time.Sleep(time.Second * 1)
+			return m.GetUrl(query)
+		}
+
 		log.Printf("Error searching for image: %s", err)
 		return ""
 	}

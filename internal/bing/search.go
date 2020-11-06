@@ -7,13 +7,18 @@ import (
 	"net/url"
 )
 
-const apiUrl = "https://api.bing.microsoft.com/v7.0/images/search?count=1&mkt=en-GB&safeSearch=Strict&aspect=Wide&imageType=Photo&license=Share&q="
+const apiUrl = "https://api.bing.microsoft.com/v7.0/images/search?count=1&imageType=Photo&license=Share&q="
+
+var RequestRateError = errors.New("request rate limit exceeded")
 
 // imageSearch holds the data needed from a Bing image search API request.
 type imageSearch struct {
 	Value []struct {
 		ThumbnailURL string `json:"thumbnailUrl"`
 	} `json:"value"`
+	Error struct {
+		Code int `json:"code"`
+	} `json:"error"`
 }
 
 // ImageSearchApi contains methods for interacting with the Bing image search API.
@@ -49,6 +54,9 @@ func (i ImageSearchApi) SearchForImage(query string) (string, error) {
 		return "", err
 	}
 
+	if data.Error.Code == 429 {
+		return "", RequestRateError
+	}
 	if len(data.Value) <= 0 {
 		// IThis will also trigger if we hit a rate limit.
 		return "", errors.New("no images found")
