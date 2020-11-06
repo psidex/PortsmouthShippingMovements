@@ -17,7 +17,7 @@ type imageSearch struct {
 		ThumbnailURL string `json:"thumbnailUrl"`
 	} `json:"value"`
 	Error struct {
-		Code int `json:"code"`
+		Code string `json:"code"`
 	} `json:"error"`
 }
 
@@ -54,7 +54,7 @@ func (i ImageSearchApi) SearchForImage(query string) (string, error) {
 		return "", err
 	}
 
-	if data.Error.Code == 429 {
+	if data.Error.Code == "429" {
 		return "", RequestRateError
 	}
 	if len(data.Value) <= 0 {
