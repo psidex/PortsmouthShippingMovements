@@ -31,6 +31,6 @@ func (a MovementApi) GetShippingMovements(w http.ResponseWriter, r *http.Request
 
 	err := json.NewEncoder(w).Encode(currentMovements)
 	if err != nil {
-		log.Print("GetShippingMovements: encoding API response failed: %s", err)
+		log.Printf("GetShippingMovements: encoding API response failed: %s", err)
 	}
 }
