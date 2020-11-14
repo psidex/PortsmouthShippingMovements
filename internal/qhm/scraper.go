@@ -1,16 +1,14 @@
-package movements
+package qhm
 
 import (
 	"github.com/PuerkitoBio/goquery"
-	"github.com/psidex/PortsmouthShippingMovements/internal/shipinfo"
 	"io"
 	"net/http"
 	"strings"
 	"time"
 )
 
-// dailyMovementUrl is the base URL for daily movements.
-//const dailyMovementUrl = "http://127.0.0.1:8000/qhm.html?q="
+// dailyMovementUrl is the base URL for portsmouth's daily shipping movements.
 const dailyMovementUrl = "https://www.royalnavy.mod.uk/qhm/portsmouth/shipping-movements/daily-movements?date="
 
 // Scraper is for dealing with requesting and parsing movements from the QHM.
@@ -56,9 +54,9 @@ func (m Scraper) dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, erro
 				case "Ship":
 					thisMovement.Name = tdText
 				case "From":
-					thisMovement.From = locationFromAbbreviation(tdText)
+					thisMovement.From = toLocation(tdText)
 				case "To":
-					thisMovement.To = locationFromAbbreviation(tdText)
+					thisMovement.To = toLocation(tdText)
 				case "Methods":
 					thisMovement.Method = tdText
 				case "Tug":
@@ -102,30 +100,4 @@ func (m Scraper) getMovements(dt time.Time) ([]Movement, error) {
 	}
 
 	return movements, nil
-}
-
-// GetTodayMovements returns a slice of Movement structs containing the data for today.
-func (m Scraper) GetTodayMovements() ([]Movement, error) {
-	dt := time.Now()
-	return m.getMovements(dt)
-}
-
-// GetTomorrowMovements returns a slice of Movement structs containing the data for tomorrow.
-func (m Scraper) GetTomorrowMovements() ([]Movement, error) {
-	dt := time.Now()
-	tomorrow := dt.AddDate(0, 0, 1)
-	return m.getMovements(tomorrow)
-}
-
-// locationFromAbbreviation returns a Location struct for a given abbreviation.
-// If no location name can be found, the name is also set to the abbreviation.
-func locationFromAbbreviation(abbreviation string) Location {
-	name := abbreviation
-	if locationName, ok := shipinfo.LocationAbbreviations[abbreviation]; ok {
-		name = locationName
-	}
-	return Location{
-		Abbreviation: abbreviation,
-		Name:         name,
-	}
 }

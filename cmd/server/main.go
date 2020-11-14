@@ -2,11 +2,11 @@ package main
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/psidex/PortsmouthShippingMovements/internal/api"
 	"github.com/psidex/PortsmouthShippingMovements/internal/bing"
 	"github.com/psidex/PortsmouthShippingMovements/internal/config"
+	"github.com/psidex/PortsmouthShippingMovements/internal/handlers"
 	"github.com/psidex/PortsmouthShippingMovements/internal/images"
-	"github.com/psidex/PortsmouthShippingMovements/internal/movements"
+	"github.com/psidex/PortsmouthShippingMovements/internal/qhm"
 	"github.com/robfig/cron/v3"
 	"log"
 	"net/http"
@@ -31,19 +31,19 @@ func main() {
 	imageUrlMan, err := images.NewUrlManager(imageSearchApi, c.ImageStoragePath)
 	check(err)
 
-	movementScraper := movements.NewScraper(webScraperHttpClient, c.ContactEmail)
-	movementMan := movements.NewManager(imageUrlMan, movementScraper)
+	qhmScraper := qhm.NewScraper(webScraperHttpClient, c.ContactEmail)
+	movementMan := qhm.NewMovementManager(imageUrlMan, qhmScraper)
 
 	// Load initial data.
-	movements.UpdateMovements(movementMan)
+	movementMan.PrettyUpdate()
 
 	// Start a cron to run the update function using given config string.
 	cr := cron.New()
-	_, err = cr.AddFunc(c.UpdateCronString, func() { movements.UpdateMovements(movementMan) })
+	_, err = cr.AddFunc(c.UpdateCronString, func() { movementMan.PrettyUpdate() })
 	check(err)
 	cr.Start()
 
-	apiRoute := api.NewMovementApi(movementMan)
+	apiRoute := handlers.NewMovementApi(movementMan)
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/api/movements", apiRoute.GetShippingMovements)

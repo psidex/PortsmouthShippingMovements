@@ -1,19 +1,13 @@
-package movements
+package qhm
 
-// MovementType represents the different types of data in the movement table rows.
+// MovementType is a type that represents the different types of data in the movement table rows.
 type MovementType int
 
-// Movement types.
+// Set constants for actual movement types.
 const (
 	Move   MovementType = iota // Move represents a ship movement.
 	Notice                     // Notice represents a notice from the Harbour Master.
 )
-
-// Location holds the names for a single location.
-type Location struct {
-	Abbreviation string `json:"abbreviation"` // The abbreviation of the location.
-	Name         string `json:"name"`         // The full name of the location.
-}
 
 // Movement represents one row in the table of movements.
 // Although this is called Movement it can hold data for a Move or a Notice.

@@ -1,7 +1,13 @@
-package shipinfo
+package qhm
 
-// LocationAbbreviations is a string:string map of location abbreviation to full name.
-var LocationAbbreviations = map[string]string{
+// Location holds the names for a single location.
+type Location struct {
+	Abbreviation string `json:"abbreviation"` // The abbreviation of the location.
+	Name         string `json:"name"`         // The full name of the location.
+}
+
+// locationAbbreviations is a string:string map of location abbreviation to full name.
+var locationAbbreviations = map[string]string{
 	"NAB":       "Nab Tower",
 	"SRJ":       "South Railway Jetty",
 	"SRJ ( S )": "South Railway Jetty (South)",
@@ -51,4 +57,15 @@ var LocationAbbreviations = map[string]string{
 	"TCL":       "Tank Cleaner",
 	"HORB":      "Hold Off Re-Berth",
 	"WIND":      "Wind Ship (Cold Move Using Tugs To Turn Ship And Re-Berth)",
+}
+
+func toLocation(abbreviation string) Location {
+	name := abbreviation
+	if locationName, ok := locationAbbreviations[abbreviation]; ok {
+		name = locationName
+	}
+	return Location{
+		Abbreviation: abbreviation,
+		Name:         name,
+	}
 }
