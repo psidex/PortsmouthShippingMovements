@@ -1,7 +1,6 @@
 {
   "update_cron_string": "0 0,6,12,18 * * *",
   "contact_email": "me@gmail.com",
-  "image_storage_path": "./imageurlstorage",
-  "access_log_path": "./access.log",
+  "storage_path": "./storage",
   "bing_image_search_api_key": "your_key"
 }

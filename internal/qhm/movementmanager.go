@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// MovementManager is a goroutine-safe controller for storing and updating movement lists for today and tomorrow.
+// MovementManager is a goroutine-safe manager for storing and updating movement lists for today and tomorrow.
 type MovementManager struct {
 	mu                *sync.Mutex       // The mutex for this handler. Being a pointer ensures that it's never copied.
 	imageUrlMan       images.UrlManager // The storage manager for ship image urls.
@@ -19,8 +19,8 @@ type MovementManager struct {
 }
 
 // NewMovementManager creates a new MovementManager.
-// Any MovementManager should be passed as a pointer as the setters reassign the movement slice fields.
 func NewMovementManager(imageUrlMan images.UrlManager, scraper Scraper) *MovementManager {
+	// Any MovementManager should be passed as a pointer as the setters reassign the movement slice fields.
 	return &MovementManager{
 		mu:          &sync.Mutex{},
 		imageUrlMan: imageUrlMan,
@@ -44,36 +44,33 @@ func (m MovementManager) Movements() (todayMovements []Movement, tomorrowMovemen
 	return todayMovements, tomorrowMovements
 }
 
-// postProcess does post processing for the scraped movement data, such as setting an image.
-// It directly changes the values stored by the slice so it does not return anything.
-func (m MovementManager) postProcess(movementSlice []Movement) {
-	// We have to iterate this way so we can change the values in the slice. Using range would make a copy of the
-	// elements which means we wouldn't be able to change the actual values inside the slice.
+// insertMetadata fetches and inserts metadata for each movement. Values are edited in place so nothing is returned.
+func (m MovementManager) insertMetadata(movementSlice []Movement) {
+	// We iterate this way so we can change the values in place.
 	for i := 0; i < len(movementSlice); i++ {
 		if movementSlice[i].Type == Move {
-			// Create a query to search for an image of the ship.
-			query := movementSlice[i].Name
+			shipTitle := movementSlice[i].Name
 
 			// If there are multiple ships referenced in one movement, just get image for first one.
-			if strings.Contains(query, ",") {
-				query = strings.Split(query, ",")[0]
-			} else if strings.Contains(query, "&") {
-				query = strings.Split(query, "&")[0]
+			splitters := []string{",", "&", " AND "}
+			for _, splitter := range splitters {
+				if strings.Contains(shipTitle, splitter) {
+					shipTitle = strings.Split(shipTitle, splitter)[0]
+				}
 			}
 
-			query = strings.TrimSpace(query)
+			shipTitle = strings.TrimSpace(shipTitle)
 
 			// Prepend "Portsmouth " to image search so that a generic name like "TUG" will still show a relevant image.
-			query = "Portsmouth " + query
-
-			movementSlice[i].ImageUrl = m.imageUrlMan.GetUrl(query)
-			movementSlice[i].VesselFinderUrl = vesselfinder.GetSearchUrl(movementSlice[i].Name)
+			movementSlice[i].ImageUrl = m.imageUrlMan.GetUrl("Portsmouth " + shipTitle)
+			movementSlice[i].VesselFinderUrl = vesselfinder.GetSearchUrl(shipTitle)
 		}
 	}
 }
 
 // Update updates the list of movements for both days.
-func (m *MovementManager) Update() error {
+func (m *MovementManager) Update() {
+	log.Println("Updating movement store")
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -82,26 +79,17 @@ func (m *MovementManager) Update() error {
 
 	todayMovements, err := m.scraper.getMovements(tToday)
 	if err != nil {
-		return err
+		log.Printf("Error scraping movements for today: %s", err)
+		return
 	}
-	m.postProcess(todayMovements)
+	m.insertMetadata(todayMovements)
 	m.todayMovements = todayMovements
 
 	tomorrowMovements, err := m.scraper.getMovements(tTomorrow)
 	if err != nil {
-		return err
+		log.Printf("Error scraping movements for tomorrow: %s", err)
+		return
 	}
-	m.postProcess(tomorrowMovements)
+	m.insertMetadata(tomorrowMovements)
 	m.tomorrowMovements = tomorrowMovements
-
-	return nil
-}
-
-// PrettyUpdate runs m.Update with logging and error handling.
-func (m *MovementManager) PrettyUpdate() {
-	log.Println("Updating movement store")
-	err := m.Update()
-	if err != nil {
-		log.Printf("Error when updating movement store: %s", err)
-	}
 }

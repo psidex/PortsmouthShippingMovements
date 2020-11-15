@@ -28,18 +28,18 @@ func main() {
 	webScraperHttpClient := &http.Client{Timeout: time.Second * 10}
 
 	imageSearchApi := bing.NewImageSearchApi(bingApiHttpClient, c.BingImageSearchApiKey)
-	imageUrlMan, err := images.NewUrlManager(imageSearchApi, c.ImageStoragePath)
+	imageUrlMan, err := images.NewUrlManager(imageSearchApi, c.StoragePath)
 	check(err)
 
 	qhmScraper := qhm.NewScraper(webScraperHttpClient, c.ContactEmail)
 	movementMan := qhm.NewMovementManager(imageUrlMan, qhmScraper)
 
 	// Load initial data.
-	movementMan.PrettyUpdate()
+	movementMan.Update()
 
 	// Start a cron to run the update function using given config string.
 	cr := cron.New()
-	_, err = cr.AddFunc(c.UpdateCronString, func() { movementMan.PrettyUpdate() })
+	_, err = cr.AddFunc(c.UpdateCronString, func() { movementMan.Update() })
 	check(err)
 	cr.Start()
 

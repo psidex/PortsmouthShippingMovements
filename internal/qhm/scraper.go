@@ -54,9 +54,9 @@ func (m Scraper) dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, erro
 				case "Ship":
 					thisMovement.Name = tdText
 				case "From":
-					thisMovement.From = toLocation(tdText)
+					thisMovement.From = newLocation(tdText)
 				case "To":
-					thisMovement.To = toLocation(tdText)
+					thisMovement.To = newLocation(tdText)
 				case "Methods":
 					thisMovement.Method = tdText
 				case "Tug":

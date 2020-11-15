@@ -10,11 +10,11 @@ WORKDIR /psm
 COPY static static
 COPY --from=builder /psmbuild/psmserver .
 COPY --from=builder /psmbuild/version ./static
-ENV INSIDE_DOCKER "True"
 EXPOSE 8080/tcp
 CMD ["./psmserver"]
 
 # docker run -d --name psmserver \
 #     --network proxynet \
-#     -v /home/user/psmdockervolume:/data \
+#     -v $(pwd)/config.json:/psm/config.json:ro \
+#     -v psmdata:(config.json->storage_path, usually /psm/storage) \
 #     psidex/portsmouthshippingmovements
