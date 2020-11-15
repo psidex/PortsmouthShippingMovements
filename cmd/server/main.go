@@ -21,7 +21,7 @@ func check(err error) {
 }
 
 func main() {
-	c, err := config.LoadConfig()
+	c, err := config.Get()
 	check(err)
 
 	bingApiHttpClient := &http.Client{Timeout: time.Second * 10}

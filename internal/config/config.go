@@ -13,8 +13,8 @@ type Config struct {
 	BingImageSearchApiKey string `mapstructure:"bing_image_search_api_key"`
 }
 
-// LoadConfig looks for and read any config file found into the Config struct.
-func LoadConfig() (Config, error) {
+// Get looks for and read any config file found into the Config struct.
+func Get() (Config, error) {
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
 

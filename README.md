@@ -7,10 +7,8 @@
 
 https://psm.simonj.tech/
 
-A website to show Portsmouth Harbours shipping movements
+A website to show Portsmouth Harbours shipping movements.
 
 The data gets scraped every 6 hours from the links on the ["QHM Portsmouth" page](https://www.royalnavy.mod.uk/qhm/portsmouth/shipping-movements).
 
 ![demo image](./demo.png)
-
-Ships that don't start with "MV" are highlighted using bold text (as all the ferries use the MV prefix), ships that start with "HMS" are automatically expanded.
