@@ -11,22 +11,22 @@ import (
 // dailyMovementUrl is the base URL for portsmouth's daily shipping movements.
 const dailyMovementUrl = "https://www.royalnavy.mod.uk/qhm/portsmouth/shipping-movements/daily-movements?date="
 
-// Scraper is for dealing with requesting and parsing movements from the QHM.
-type Scraper struct {
+// scraper is for dealing with requesting and parsing movements from the QHM.
+type scraper struct {
 	client   *http.Client // The http Client.
 	uaString string       // uaString is the custom User Agent string for web requests made by this program.
 }
 
-// NewScraper creates a new Scraper for scraping movement data from the QHM page.
-func NewScraper(client *http.Client, contactEmail string) Scraper {
-	return Scraper{
+// newScraper creates a new scraper for scraping movement data from the QHM page.
+func newScraper(client *http.Client, contactEmail string) scraper {
+	return scraper{
 		uaString: "PortsmouthShippingMovements/0.1 (" + contactEmail + ")",
 		client:   client,
 	}
 }
 
 // dailyMovementHtmlToStruct takes the body from a request to dailyMovementUrl and extracts the movements.
-func (m Scraper) dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, error) {
+func (m scraper) dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, error) {
 	var movements []Movement
 
 	doc, err := goquery.NewDocumentFromReader(body)
@@ -78,7 +78,7 @@ func (m Scraper) dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, erro
 }
 
 // getMovements returns a slice of Movement structs containing the data for the given date.
-func (m Scraper) getMovements(dt time.Time) ([]Movement, error) {
+func (m scraper) getMovements(dt time.Time) ([]Movement, error) {
 	query := dailyMovementUrl + dt.Format("02/01/2006") // dd/mm/yyyy
 
 	req, err := http.NewRequest("GET", query, nil)

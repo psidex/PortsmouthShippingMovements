@@ -58,7 +58,7 @@ func (i ImageSearchApi) SearchForImage(query string) (string, error) {
 		return "", RequestRateError
 	}
 	if len(data.Value) <= 0 {
-		// IThis will also trigger if we hit a rate limit.
+		// This will also trigger if we hit a rate limit.
 		return "", errors.New("no images found")
 	}
 	return data.Value[0].ThumbnailURL, nil

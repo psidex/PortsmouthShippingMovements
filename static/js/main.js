@@ -83,6 +83,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const r = await fetch(apiRoute);
     const movements = await r.json();
 
+    // Server changed from serving [] to null on no data, CBA to change below loops to manage that.
+    if (movements.today === null) {
+        movements.today = [];
+    }
+    if (movements.tomorrow === null) {
+        movements.tomorrow = [];
+    }
+
     let i = 0;
     for (; i < movements.today.length; i++) {
         const todayMovement = movements.today[i];
