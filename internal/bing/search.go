@@ -32,8 +32,8 @@ func NewImageSearchApi(client *http.Client, apiKey string) ImageSearchApi {
 	return ImageSearchApi{client: client, apiKey: apiKey}
 }
 
-// SearchForImage attempts to find a thumbnail image URL for the given query.
-func (i ImageSearchApi) SearchForImage(query string) (string, error) {
+// SearchForImageUrl attempts to find a thumbnail image URL for the given query.
+func (i ImageSearchApi) SearchForImageUrl(query string) (string, error) {
 	queryUrl := apiUrl + url.QueryEscape(query)
 	req, err := http.NewRequest("GET", queryUrl, nil)
 	if err != nil {

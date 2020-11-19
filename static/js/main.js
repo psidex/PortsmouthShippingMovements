@@ -91,8 +91,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         movements.tomorrow = [];
     }
 
-    let i = 0;
-    for (; i < movements.today.length; i++) {
+    for (let i = 0; i < movements.today.length; i++) {
         const todayMovement = movements.today[i];
         const tomorrowMovement = movements.tomorrow[i];
         addLi(todayMovement, todayCollapsible);
@@ -102,7 +101,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (movements.tomorrow.length > movements.today.length) {
-        for (; i < movements.tomorrow.length; i++) {
+        for (let i = 0; i < movements.tomorrow.length; i++) {
             const tomorrowMovement = movements.tomorrow[i];
             addLi(tomorrowMovement, tomorrowCollapsible);
         }

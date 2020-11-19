@@ -2,7 +2,7 @@ package qhm
 
 import (
 	"encoding/json"
-	"github.com/peterbourgon/diskv"
+	"github.com/peterbourgon/diskv/v3"
 	"github.com/psidex/PortsmouthShippingMovements/internal/bing"
 	"github.com/psidex/PortsmouthShippingMovements/internal/config"
 	"github.com/psidex/PortsmouthShippingMovements/internal/vesselfinder"
@@ -80,7 +80,7 @@ func (m MovementManager) insertMetadata(movementSlice []Movement) {
 			var err error
 
 			// Prepend "Portsmouth " to image search so that a generic name will still find a relevant image.
-			imageUrl, err = m.imageSearch.SearchForImage("Portsmouth " + shipTitle)
+			imageUrl, err = m.imageSearch.SearchForImageUrl("Portsmouth " + shipTitle)
 			if err != nil {
 				log.Printf("Error searching for image of \"Portsmouth %s\": %s\n", shipTitle, err)
 			} else {

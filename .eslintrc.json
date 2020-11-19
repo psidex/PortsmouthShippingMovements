@@ -13,6 +13,7 @@
   "rules": {
     "indent": ["error", 4],
     "no-restricted-syntax": "off",
-    "import/extensions": "off"
+    "import/extensions": "off",
+    "no-plusplus": "off"
   }
 }
