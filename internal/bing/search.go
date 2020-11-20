@@ -9,7 +9,11 @@ import (
 
 const apiUrl = "https://api.bing.microsoft.com/v7.0/images/search?count=1&imageType=Photo&license=Share&q="
 
-var RequestRateError = errors.New("request rate limit exceeded")
+// ErrRateLimitExceeded defines an error that happens when an API rate limit is exceeded.
+var ErrRateLimitExceeded = errors.New("request rate limit exceeded")
+
+// ErrNoSearchResults defines an error that happens when no search results are found.
+var ErrNoSearchResults = errors.New("no search results found")
 
 // imageSearch holds the data needed from a Bing image search API request.
 type imageSearch struct {
@@ -21,7 +25,7 @@ type imageSearch struct {
 	} `json:"error"`
 }
 
-// ImageSearchApi contains methods for interacting with the Bing image search API.
+// ImageSearchApi is for interacting with the Bing image search API.
 type ImageSearchApi struct {
 	client *http.Client
 	apiKey string
@@ -55,11 +59,10 @@ func (i ImageSearchApi) SearchForImageUrl(query string) (string, error) {
 	}
 
 	if data.Error.Code == "429" {
-		return "", RequestRateError
+		return "", ErrRateLimitExceeded
 	}
 	if len(data.Value) <= 0 {
-		// This will also trigger if we hit a rate limit.
-		return "", errors.New("no images found")
+		return "", ErrNoSearchResults
 	}
 	return data.Value[0].ThumbnailURL, nil
 }
