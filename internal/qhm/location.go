@@ -45,25 +45,22 @@ func parseAbbreviation(abbrv string) string {
 	abbrv = cRegex.ReplaceAllString(abbrv, "(Centre)")
 
 	for _, w := range strings.Split(abbrv, " ") {
-		berth := 0
 		runed := []rune(w)
-
 		if first := runed[0]; unicode.IsNumber(first) {
-			berth, _ = strconv.Atoi(string(first))
+			berth, _ := strconv.Atoi(string(first))
+			parsed += fmt.Sprintf("Berth %d ", berth)
 			w = string(runed[1:])
 		}
 
-		if full, ok := qhmAbbreviations[w]; ok {
-			parsed += full
-		} else {
-			parsed += w
+		// With the above berth number logic and also splitting on spaces, trim(w) might be "".
+		if strings.TrimSpace(w) != "" {
+			if full, ok := qhmAbbreviations[w]; ok {
+				parsed += full
+			} else {
+				parsed += w
+			}
+			parsed += " "
 		}
-
-		if berth > 0 {
-			parsed += fmt.Sprintf("Berth %d", berth)
-		}
-
-		parsed += " "
 	}
 
 	return strings.TrimSpace(parsed)

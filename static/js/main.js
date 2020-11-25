@@ -83,7 +83,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const r = await fetch(apiRoute);
     const movements = await r.json();
 
-    // Server changed from serving [] to null on no data, CBA to change below loops to manage that.
     if (movements.today === null) {
         movements.today = [];
     }
@@ -91,7 +90,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         movements.tomorrow = [];
     }
 
-    for (let i = 0; i < movements.today.length; i++) {
+    let i = 0;
+    for (; i < movements.today.length; i++) {
         const todayMovement = movements.today[i];
         const tomorrowMovement = movements.tomorrow[i];
         addLi(todayMovement, todayCollapsible);
@@ -101,16 +101,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (movements.tomorrow.length > movements.today.length) {
-        for (let i = 0; i < movements.tomorrow.length; i++) {
+        for (; i < movements.tomorrow.length; i++) {
             const tomorrowMovement = movements.tomorrow[i];
             addLi(tomorrowMovement, tomorrowCollapsible);
         }
     }
 
-    // Init after all the HTML is setup.
+    // Init after all the HTML is ready.
     const collapsibleElems = document.querySelectorAll('.collapsible');
-    M.Collapsible.init(collapsibleElems, { accordion: false });
-
     const tooltippedElems = document.querySelectorAll('.tooltipped');
+    M.Collapsible.init(collapsibleElems, { accordion: false });
     M.Tooltip.init(tooltippedElems, {});
 });
