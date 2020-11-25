@@ -70,9 +70,10 @@ func (m MovementManager) insertMetadata(movementSlice []Movement) {
 
 		if m.urlCache.Has(shipTitle) {
 			iuBytes, err := m.urlCache.Read(shipTitle)
-			imageUrl = string(iuBytes)
 			if err != nil {
 				log.Printf("Error reading %s from urlCache: %s\n", shipTitle, err)
+			} else {
+				imageUrl = string(iuBytes)
 			}
 		} else {
 			log.Printf("Searching for image of: \"Portsmouth %s\"", shipTitle)

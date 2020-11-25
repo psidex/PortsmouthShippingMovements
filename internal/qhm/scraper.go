@@ -70,16 +70,14 @@ func (m scraper) dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, erro
 			thisMovement.Type = Notice
 		}
 
-		// Movement images will be set
 		movements = append(movements, thisMovement)
 	})
-
 	return movements, nil
 }
 
 // getMovements returns a slice of Movement structs containing the data for the given date.
 func (m scraper) getMovements(dt time.Time) ([]Movement, error) {
-	query := dailyMovementUrl + dt.Format("02/01/2006") // dd/mm/yyyy
+	query := dailyMovementUrl + dt.Format("02/01/2006")
 
 	req, err := http.NewRequest("GET", query, nil)
 	if err != nil {
