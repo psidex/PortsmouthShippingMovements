@@ -9,11 +9,11 @@ import (
 )
 
 var (
-	nRegex, _ = regexp.Compile(`\((| )N(| )\)`)
-	eRegex, _ = regexp.Compile(`\((| )E(| )\)`)
-	sRegex, _ = regexp.Compile(`\((| )S(| )\)`)
-	wRegex, _ = regexp.Compile(`\((| )W(| )\)`)
-	cRegex, _ = regexp.Compile(`\((| )C(| )\)`)
+	nRegex = regexp.MustCompile(`\((| )N(| )\)`)
+	eRegex = regexp.MustCompile(`\((| )E(| )\)`)
+	sRegex = regexp.MustCompile(`\((| )S(| )\)`)
+	wRegex = regexp.MustCompile(`\((| )W(| )\)`)
+	cRegex = regexp.MustCompile(`\((| )C(| )\)`)
 )
 
 // Location holds the names for a single location, to be used in the Movement type.
