@@ -2,8 +2,8 @@
 
 [![Build status](https://github.com/psidex/PortsmouthShippingMovements/workflows/CI/badge.svg)](https://github.com/psidex/PortsmouthShippingMovements/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/psidex/PortsmouthShippingMovements)](https://goreportcard.com/report/github.com/psidex/PortsmouthShippingMovements)
-[![license](https://img.shields.io/github/license/psidex/PortsmouthShippingMovements.svg)](./LICENSE)
-[![Ko-fi donate link](https://img.shields.io/badge/Support%20Me-Ko--fi-orange.svg?style=flat&colorA=35383d)](https://ko-fi.com/M4M18XB1)
+[![Ko-fi donate link](https://img.shields.io/badge/Donate-Coffee-orange.svg?style=flat&colorA=35383d)](https://ko-fi.com/M4M18XB1)
+[![Ethereum donate link](https://img.shields.io/badge/Donate-Ether-5965a2.svg?style=flat&colorA=35383d)](https://etherscan.io/address/0x54A8Fe0C28B9DD4940266A78d70f11B621735A97)
 
 https://psm.simonj.tech/
 
