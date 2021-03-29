@@ -34,7 +34,7 @@ func (m scraper) dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, erro
 		return []Movement{}, err
 	}
 
-	doc.Find(".qhm-shipping-movements>tbody>tr").Each(func(i int, s *goquery.Selection) {
+	doc.Find(".qhm-table").First().Find("tbody>tr").Each(func(i int, s *goquery.Selection) {
 		thisMovement := Movement{
 			Type: Move,
 		}
@@ -70,7 +70,10 @@ func (m scraper) dailyMovementHtmlToStruct(body io.ReadCloser) ([]Movement, erro
 			thisMovement.Type = Notice
 		}
 
-		movements = append(movements, thisMovement)
+		// NOTE: For some reason this gets appended to the table. Easiest way to avoid is just to check here.
+		if thisMovement.Time != "ALL TIMES APPROXIMATE AND SUBJECT TO CHANGE AT SHORT NOTICE. NAVAL BASE MOVES IN BOLD TEXT." {
+			movements = append(movements, thisMovement)
+		}
 	})
 	return movements, nil
 }
