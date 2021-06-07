@@ -1,8 +1,9 @@
 .idea
+frontend_build
+storage
 *.syso
 *.zip
 *.log
-storage
 config.json
 
 # Created by https://www.toptal.com/developers/gitignore/api/node,react,go

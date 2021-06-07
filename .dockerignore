@@ -1,6 +1,7 @@
+.idea
+frontend_build
 storage
 node_modules
-.idea
 .github
 .git
 !.git/refs/heads/master
