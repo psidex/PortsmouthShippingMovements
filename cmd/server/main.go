@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-// check checks if the error is not nil, if it is, it calls log.Fatalf.
+// check calls log.Fatalf ir err is not nil.
 func check(err error) {
 	if err != nil {
 		log.Fatalf("Fatal Error: %s", err)
@@ -32,7 +32,7 @@ func main() {
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/api/movements", movementMan.SendCurrentMovements)
-	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./frontend_build/")))
 
 	log.Println("Serving http on all available interfaces @ port 8080")
 	check(http.ListenAndServe(":8080", router))

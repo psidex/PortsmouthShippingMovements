@@ -1,13 +1,13 @@
-imagestorage
+storage
 node_modules
 .idea
 .github
 .git
 !.git/refs/heads/master
 
+*.syso
 *.zip
 *.log
-*.png
 *.md
 .eslintrc.json
 config.json

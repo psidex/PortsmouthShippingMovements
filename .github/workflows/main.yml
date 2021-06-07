@@ -3,13 +3,22 @@ name: CI
 on:
   push:
     branches: [ master ]
-    # Only run if a .go file, mod files, the Dockerfile, or any file in /static has been changed.
     paths:
       - '**.go'
+      - '**.js'
+      - '**.jsx'
+      - '**.html'
+      - '**.css'
+      - '**.scss'
+      - '**.json'
+      - '**.lock'
+      - '**.png'
+      - '**.svg'
+      - '**.ico'
+      - 'robots.txt'
       - 'go.mod'
       - 'go.sum'
       - 'Dockerfile'
-      - 'static/**'
       - '.github/workflows/*.yml'
 
 jobs:
