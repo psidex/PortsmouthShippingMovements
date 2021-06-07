@@ -1,5 +1,6 @@
 .idea
 frontend_build
+build
 storage
 *.syso
 *.zip
@@ -170,3 +171,13 @@ thumb
 sketch
 
 # End of https://www.toptal.com/developers/gitignore/api/node,react,go
+
+# From create-react-app
+
+/.pnp
+.pnp.js
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
