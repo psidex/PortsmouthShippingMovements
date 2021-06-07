@@ -1,0 +1,21 @@
+#app {
+  width: 75%;
+  margin: auto;
+}
+
+#todayMovements {
+
+}
+
+#tomorrowMovements {
+
+}
+
+.loader {
+  // TY https://stackoverflow.com/a/23703655/6396652
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}

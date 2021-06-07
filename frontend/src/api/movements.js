@@ -13,7 +13,14 @@ export function fromToAbbreviation(movement) {
 }
 
 export async function getMovements() {
-  const r = await fetch('/api/movements');
+  let r;
+
+  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+    r = await fetch('./exampledata.json');
+  } else {
+    r = await fetch('/api/movements');
+  }
+
   const movements = await r.json();
 
   if (movements.today === null) {
