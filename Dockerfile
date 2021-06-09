@@ -14,12 +14,12 @@ COPY frontend/. .
 COPY .git/refs/heads/master .
 RUN head -c 7 ./master > ./public/version && rm ./master
 RUN yarn install
-RUN yarn build
+RUN yarn prodbuild
 
 FROM alpine:latest
 WORKDIR /app
 COPY --from=go-builder /build/psmserver .
-COPY --from=frontend-builder /app/build ./static
+COPY --from=frontend-builder /app/build ./frontend_build
 EXPOSE 8080/tcp
 ENTRYPOINT ["./psmserver"]
 
