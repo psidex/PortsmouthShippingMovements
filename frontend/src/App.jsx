@@ -4,7 +4,7 @@ import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import React, { useEffect, useState } from 'react';
 import Loader from 'react-loader-spinner';
 
-import ShipMovements from './ShipMovements';
+import ShipMovements from './components/ShipMovements';
 import { getMovements } from './api/movements';
 
 export default function App() {

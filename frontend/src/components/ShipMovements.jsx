@@ -1,4 +1,4 @@
-import './css/Accordion.scss';
+import '../css/Accordion.scss';
 
 import React from 'react';
 import {
@@ -9,19 +9,31 @@ import {
   AccordionItemPanel,
 } from 'react-accessible-accordion';
 
-import { fromToAbbreviation, fromToSentence } from './api/movements';
+import { fromToAbbreviation, fromToSentence } from '../api/movements';
 
 export default function ShipMovements(props) {
-  const { title, movements } = props;
+  const { id, title, movements } = props;
   const items = [];
+  const startExpandedIds = [];
 
   for (const m of movements) {
+    // AccordionItem UUID must not have whitespace.
+    const uniqueId = `${m.time}-${m.name.replace(/\s/g, '')}`;
+
+    const isNavy = m.name.includes('HMS');
+    if (isNavy) {
+      startExpandedIds.push(uniqueId);
+    }
+
     items.push(
-      <AccordionItem>
+      <AccordionItem key={uniqueId} uuid={uniqueId}>
         <AccordionItemHeading>
           <AccordionItemButton>
-            <p>{m.time}</p>
-            <p>{m.name}</p>
+            <p navy={isNavy ? 'true' : 'false'}>
+              {m.time}
+              {' - '}
+              {m.name}
+            </p>
             <p>{fromToAbbreviation(m)}</p>
           </AccordionItemButton>
         </AccordionItemHeading>
@@ -36,9 +48,9 @@ export default function ShipMovements(props) {
   }
 
   return (
-    <div className="accordionDiv">
+    <div id={id} className="accordionDiv">
       <h2>{title}</h2>
-      <Accordion allowMultipleExpanded allowZeroExpanded>
+      <Accordion allowMultipleExpanded allowZeroExpanded preExpanded={startExpandedIds}>
         {items}
       </Accordion>
     </div>

@@ -1,14 +1,17 @@
+@use 'widths' as *;
+
 #app {
-  width: 75%;
   margin: auto;
+  width: 75%;
+  @media only screen and (max-width: $first-max-width) {
+    width: 100%;
+  }
 }
 
-#todayMovements {
-
-}
-
-#tomorrowMovements {
-
+@media only screen and (max-width: $second-max-width) {
+  #tomorrowMovements {
+    margin-top: 5em;
+  }
 }
 
 .loader {

@@ -1,33 +1,29 @@
+@use 'widths' as *;
+
 // Partly from github.com/springload/react-accessible-accordion/src/css/fancy-example.css
 
 .accordionDiv {
   display: inline-block;
   vertical-align: top;
-  width: 49%; // TODO: Why doesn't 50% work?
+  width: 49%; // Not sure why 50% doesn't work
   margin: 0;
   padding: 0;
+  @media only screen and (max-width: $second-max-width) {
+    width: 100%;
+  }
 }
 
 .accordion {
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 2px;
+  margin-left: 0.25em;
+  margin-right: 0.25em;
 }
 
 .accordion__item + .accordion__item {
   // Show a line separating items that are collapsed next to each other
   border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
-
-
-
-
-// TODO: Make them spaced out better
-.accordion__button > *  {
-  display: inline;
-}
-
-
-
 
 .accordion__button {
   // Style the actual bit you click
@@ -37,6 +33,23 @@
   padding: 1.25em;
   text-align: left;
   border: none;
+  display: flex;
+
+  // Time and name on left which takes up most space, abbreviation on right with little space.
+  *  {
+    margin: 0;
+  }
+  *:nth-child(1)  {
+    flex-grow: 10;
+    text-align: left;
+  }
+  *:nth-child(1)[navy="true"]  {
+    font-weight: bold;
+  }
+  *:nth-child(2)  {
+    flex-grow: 1;
+    text-align: right;
+  }
 }
 
 .accordion__button:hover {
@@ -62,17 +75,27 @@
   transform: rotate(45deg);
 }
 
+// NOTE: This fixes the position of the arrows. It is in a separate section to remind me that there is likely a better
+// way of doing this, and I have only tested the positioning in Firefox on my computer.
+.accordion__button[aria-expanded="true"]::before,
+.accordion__button[aria-selected="true"]::before {
+  margin-top: 0;
+}
+.accordion__button::before {
+  margin-top: 0.3em;
+}
+
 .accordion__panel {
   // The bit that holds the content
   padding: 2em;
   animation: fadein 0.35s ease-in;
   text-align: center;
-}
 
-.accordion__panel > img {
-  width: 100%;
-  height: 18em;
-  object-fit: cover;
+  img {
+    width: 100%;
+    height: 18em;
+    object-fit: cover;
+  }
 }
 
 @keyframes fadein {
