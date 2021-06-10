@@ -12,7 +12,7 @@ WORKDIR /app
 COPY frontend/. .
 COPY .git/refs/heads/master ./public/version
 RUN yarn install
-RUN yarn prodbuild
+RUN yarn build
 
 FROM alpine:latest
 WORKDIR /app
