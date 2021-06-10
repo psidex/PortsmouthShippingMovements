@@ -10,9 +10,7 @@ FROM node:14.17 AS frontend-builder
 ENV PATH /app/node_modules/.bin:$PATH
 WORKDIR /app
 COPY frontend/. .
-# Write short hash of current commit to version file
-COPY .git/refs/heads/master .
-RUN head -c 7 ./master > ./public/version && rm ./master
+COPY .git/refs/heads/master ./public/version
 RUN yarn install
 RUN yarn prodbuild
 
