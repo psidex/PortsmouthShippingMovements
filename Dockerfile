@@ -23,6 +23,6 @@ ENTRYPOINT ["./psmserver"]
 
 # docker run -d --name psmserver \
 #     --network proxynet \
-#     -v $(pwd)/config.json:/psm/config.json:ro \
-#     -v psmdata:(config.json->storage_path, usually /psm/storage) \
+#     -v $(pwd)/config.json:/app/config.json:ro \
+#     -v psmdata:(match with config.json storage_path, default will be /app/storage) \
 #     psidex/portsmouthshippingmovements
